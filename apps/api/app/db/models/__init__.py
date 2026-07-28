@@ -1,3 +1,6 @@
+from app.db.models.invitation import Invitation
+from app.db.models.organisation import Organisation
+from app.db.models.organisation_member import OrganisationMember
 from app.db.models.permission import Permission
 from app.db.models.role import Role
 from app.db.models.role_permission import RolePermission
@@ -10,4 +13,7 @@ __all__ = [
     "Permission",
     "RolePermission",
     "UserRole",
+    "Organisation",
+    "OrganisationMember",
+    "Invitation",
 ]
