@@ -4,6 +4,7 @@ from app.core.security.jwt import create_access_token
 from app.core.security.password import hash_password, verify_password
 from app.db.models.user import User
 from app.repositories.user_repository import UserRepository
+from app.schemas.auth import LoginRequest, RegisterRequest, TokenResponse
 
 
 class AuthService:
@@ -12,13 +13,9 @@ class AuthService:
 
     async def register_user(
         self,
-        email: str,
-        username: str,
-        password: str,
-        first_name: str,
-        last_name: str,
+        request: RegisterRequest,
     ) -> User:
-        existing_user = await self.repository.get_by_email(email)
+        existing_user = await self.repository.get_by_email(request.email)
 
         if existing_user:
             raise HTTPException(
@@ -27,21 +24,20 @@ class AuthService:
             )
 
         user = User(
-            email=email,
-            username=username,
-            password_hash=hash_password(password),
-            first_name=first_name,
-            last_name=last_name,
+            email=request.email,
+            username=request.username,
+            password_hash=hash_password(request.password),
+            first_name=request.first_name,
+            last_name=request.last_name,
         )
 
         return await self.repository.create(user)
 
     async def authenticate_user(
         self,
-        email: str,
-        password: str,
-    ) -> str:
-        user = await self.repository.get_by_email(email)
+        request: LoginRequest,
+    ) -> TokenResponse:
+        user = await self.repository.get_by_email(request.email)
 
         if user is None:
             raise HTTPException(
@@ -49,13 +45,16 @@ class AuthService:
                 detail="Invalid email or password",
             )
 
-        if not verify_password(password, user.password_hash):
+        if not verify_password(request.password, user.password_hash):
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Invalid email or password",
             )
 
-        return create_access_token(str(user.id))
+        return TokenResponse(
+            access_token=create_access_token(str(user.id)),
+            token_type="bearer",
+        )
 
     async def get_user_by_email(self, email: str) -> User | None:
         return await self.repository.get_by_email(email)
