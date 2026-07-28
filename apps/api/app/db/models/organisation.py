@@ -2,7 +2,6 @@ from datetime import datetime
 from uuid import UUID
 from uuid import uuid4
 
-from sqlalchemy import Boolean
 from sqlalchemy import DateTime
 from sqlalchemy import String
 from sqlalchemy import Text
@@ -13,45 +12,49 @@ from sqlalchemy.orm import relationship
 from app.db.base import Base
 
 
-class User(Base):
-    __tablename__ = "users"
+class Organisation(Base):
+    __tablename__ = "organisations"
 
     id: Mapped[UUID] = mapped_column(
         primary_key=True,
         default=uuid4,
     )
 
-    email: Mapped[str] = mapped_column(
+    name: Mapped[str] = mapped_column(
+        String(255),
+        nullable=False,
+        index=True,
+    )
+
+    slug: Mapped[str] = mapped_column(
         String(255),
         unique=True,
         nullable=False,
         index=True,
     )
 
-    username: Mapped[str] = mapped_column(
-        String(50),
-        unique=True,
-        nullable=False,
-        index=True,
-    )
-
-    password_hash: Mapped[str] = mapped_column(
+    logo_url: Mapped[str | None] = mapped_column(
         Text,
-        nullable=False,
+        nullable=True,
     )
 
-    first_name: Mapped[str | None] = mapped_column(
+    website: Mapped[str | None] = mapped_column(
+        String(255),
+        nullable=True,
+    )
+
+    industry: Mapped[str | None] = mapped_column(
         String(100),
         nullable=True,
     )
 
-    last_name: Mapped[str | None] = mapped_column(
+    country: Mapped[str | None] = mapped_column(
         String(100),
         nullable=True,
     )
 
-    avatar_url: Mapped[str | None] = mapped_column(
-        Text,
+    timezone: Mapped[str | None] = mapped_column(
+        String(100),
         nullable=True,
     )
 
@@ -59,26 +62,6 @@ class User(Base):
         String(20),
         default="ACTIVE",
         nullable=False,
-    )
-
-    is_active: Mapped[bool] = mapped_column(
-        Boolean,
-        default=True,
-    )
-
-    is_verified: Mapped[bool] = mapped_column(
-        Boolean,
-        default=False,
-    )
-
-    is_superuser: Mapped[bool] = mapped_column(
-        Boolean,
-        default=False,
-    )
-
-    last_login: Mapped[datetime | None] = mapped_column(
-        DateTime(timezone=True),
-        nullable=True,
     )
 
     created_at: Mapped[datetime] = mapped_column(
@@ -92,21 +75,21 @@ class User(Base):
         onupdate=datetime.utcnow,
     )
 
-    user_roles: Mapped[list["UserRole"]] = relationship(
-        "UserRole",
-        back_populates="user",
+    members: Mapped[list["OrganisationMember"]] = relationship(
+        "OrganisationMember",
+        back_populates="organisation",
         cascade="all, delete-orphan",
     )
 
-    organisation_members: Mapped[list["OrganisationMember"]] = relationship(
-        "OrganisationMember",
-        back_populates="user",
+    invitations: Mapped[list["Invitation"]] = relationship(
+        "Invitation",
+        back_populates="organisation",
         cascade="all, delete-orphan",
     )
 
     def __repr__(self) -> str:
         return (
-            f"User(id={self.id}, "
-            f"email='{self.email}', "
-            f"username='{self.username}')"
+            f"Organisation(id={self.id}, "
+            f"name='{self.name}', "
+            f"slug='{self.slug}')"
         )

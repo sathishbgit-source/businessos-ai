@@ -56,17 +56,18 @@ class Role(Base):
         back_populates="roles",
         lazy="selectin",
     )
-    
+
     user_roles: Mapped[list["UserRole"]] = relationship(
         "UserRole",
         back_populates="role",
         cascade="all, delete-orphan",
     )
-    
-    
-    
-    
-    
+
+    organisation_members: Mapped[list["OrganisationMember"]] = relationship(
+        "OrganisationMember",
+        back_populates="role",
+        cascade="all, delete-orphan",
+    )
 
     def __repr__(self) -> str:
         return f"Role(name='{self.name}')"
