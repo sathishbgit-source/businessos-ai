@@ -104,6 +104,11 @@ class User(Base):
         cascade="all, delete-orphan",
     )
 
+    owned_organisations: Mapped[list["Organisation"]] = relationship(
+        "Organisation",
+        back_populates="owner",
+    )
+
     def __repr__(self) -> str:
         return (
             f"User(id={self.id}, "
