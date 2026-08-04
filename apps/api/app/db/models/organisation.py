@@ -3,6 +3,7 @@ from uuid import UUID
 from uuid import uuid4
 
 from sqlalchemy import DateTime
+from sqlalchemy import ForeignKey
 from sqlalchemy import String
 from sqlalchemy import Text
 from sqlalchemy.orm import Mapped
@@ -31,6 +32,16 @@ class Organisation(Base):
         unique=True,
         nullable=False,
         index=True,
+    )
+
+    description: Mapped[str | None] = mapped_column(
+        Text,
+        nullable=True,
+    )
+
+    owner_id: Mapped[UUID | None] = mapped_column(
+        ForeignKey("users.id", ondelete="SET NULL"),
+        nullable=True,
     )
 
     logo_url: Mapped[str | None] = mapped_column(
@@ -73,6 +84,11 @@ class Organisation(Base):
         DateTime(timezone=True),
         default=datetime.utcnow,
         onupdate=datetime.utcnow,
+    )
+
+    owner: Mapped["User | None"] = relationship(
+        "User",
+        back_populates="owned_organisations",
     )
 
     members: Mapped[list["OrganisationMember"]] = relationship(
