@@ -1,20 +1,28 @@
-
 from datetime import datetime
 from uuid import UUID
 from uuid import uuid4
 
 from sqlalchemy import DateTime
 from sqlalchemy import ForeignKey
+from sqlalchemy import Index
 from sqlalchemy import String
 from sqlalchemy.orm import Mapped
 from sqlalchemy.orm import mapped_column
 from sqlalchemy.orm import relationship
 
 from app.db.base import Base
+from app.db.enums import InvitationStatus
 
 
 class Invitation(Base):
     __tablename__ = "invitations"
+
+    __table_args__ = (
+        Index("ix_invitation_organisation_id", "organisation_id"),
+        Index("ix_invitation_email", "email"),
+        Index("ix_invitation_token", "token"),
+        Index("ix_invitation_expires_at", "expires_at"),
+    )
 
     id: Mapped[UUID] = mapped_column(
         primary_key=True,
@@ -34,19 +42,17 @@ class Invitation(Base):
     email: Mapped[str] = mapped_column(
         String(255),
         nullable=False,
-        index=True,
     )
 
     token: Mapped[str] = mapped_column(
         String(255),
         unique=True,
         nullable=False,
-        index=True,
     )
 
-    status: Mapped[str] = mapped_column(
+    status: Mapped[InvitationStatus] = mapped_column(
         String(20),
-        default="PENDING",
+        default=InvitationStatus.PENDING,
         nullable=False,
     )
 
@@ -76,6 +82,7 @@ class Invitation(Base):
 
     def __repr__(self) -> str:
         return (
-            f"Invitation(email='{self.email}', "
+            f"Invitation("
+            f"email='{self.email}', "
             f"status='{self.status}')"
         )

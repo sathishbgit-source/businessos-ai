@@ -11,6 +11,7 @@ from sqlalchemy.orm import mapped_column
 from sqlalchemy.orm import relationship
 
 from app.db.base import Base
+from app.db.enums import OrganisationStatus
 
 
 class Organisation(Base):
@@ -69,9 +70,9 @@ class Organisation(Base):
         nullable=True,
     )
 
-    status: Mapped[str] = mapped_column(
+    status: Mapped[OrganisationStatus] = mapped_column(
         String(20),
-        default="ACTIVE",
+        default=OrganisationStatus.ACTIVE,
         nullable=False,
     )
 
@@ -84,6 +85,11 @@ class Organisation(Base):
         DateTime(timezone=True),
         default=datetime.utcnow,
         onupdate=datetime.utcnow,
+    )
+
+    deleted_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True),
+        nullable=True,
     )
 
     owner: Mapped["User | None"] = relationship(

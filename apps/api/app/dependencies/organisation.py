@@ -21,8 +21,9 @@ def get_create_organisation_service(
     """Create CreateOrganisationService with all dependencies."""
 
     return CreateOrganisationService(
+        db=db,
         organisation_repository=OrganisationRepository(db),
         organisation_member_repository=OrganisationMemberRepository(db),
         role_repository=RoleRepository(db),
         user_repository=UserRepository(db),
-    )
+)
