@@ -4,6 +4,7 @@ from uuid import uuid4
 
 from sqlalchemy import DateTime
 from sqlalchemy import ForeignKey
+from sqlalchemy import Index
 from sqlalchemy import String
 from sqlalchemy import UniqueConstraint
 from sqlalchemy.orm import Mapped
@@ -11,6 +12,7 @@ from sqlalchemy.orm import mapped_column
 from sqlalchemy.orm import relationship
 
 from app.db.base import Base
+from app.db.enums import MemberStatus
 
 
 class OrganisationMember(Base):
@@ -22,6 +24,9 @@ class OrganisationMember(Base):
             "user_id",
             name="uq_organisation_member",
         ),
+        Index("ix_org_member_organisation_id", "organisation_id"),
+        Index("ix_org_member_user_id", "user_id"),
+        Index("ix_org_member_role_id", "role_id"),
     )
 
     id: Mapped[UUID] = mapped_column(
@@ -43,11 +48,10 @@ class OrganisationMember(Base):
         ForeignKey("roles.id", ondelete="CASCADE"),
         nullable=False,
     )
-    
 
-    status: Mapped[str] = mapped_column(
+    status: Mapped[MemberStatus] = mapped_column(
         String(20),
-        default="ACTIVE",
+        default=MemberStatus.ACTIVE,
         nullable=False,
     )
 
@@ -73,10 +77,9 @@ class OrganisationMember(Base):
     )
 
     user: Mapped["User"] = relationship(
-    "User",
-    back_populates="organisation_members",
+        "User",
+        back_populates="organisation_members",
     )
-    
 
     role: Mapped["Role"] = relationship(
         "Role",
