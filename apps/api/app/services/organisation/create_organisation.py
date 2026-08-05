@@ -36,7 +36,6 @@ class CreateOrganisationService:
         )
         self.role_repository = role_repository
         self.user_repository = user_repository
-
     async def execute(
         self,
         *,
@@ -47,27 +46,27 @@ class CreateOrganisationService:
     ) -> Organisation:
         """Execute the create organisation workflow."""
 
-        async with self.db.begin():
-            await self._validate_slug(slug)
+        await self._validate_slug(slug)
 
-            owner = await self._load_owner(owner_id)
+        owner = await self._load_owner(owner_id)
 
-            admin_role = await self._load_admin_role()
+        admin_role = await self._load_admin_role()
 
-            organisation = await self._create_organisation(
-                name=name,
-                slug=slug,
-                description=description,
-                owner_id=owner.id,
-            )
+        organisation = await self._create_organisation(
+            name=name,
+            slug=slug,
+            description=description,
+            owner_id=owner.id,
+        )
 
-            await self._assign_owner(
-                organisation=organisation,
-                owner=owner,
-                role=admin_role,
-            )
+        await self._assign_owner(
+            organisation=organisation,
+            owner=owner,
+            role=admin_role,
+        )
 
         return organisation
+
     async def _validate_slug(
         self,
         slug: str,
