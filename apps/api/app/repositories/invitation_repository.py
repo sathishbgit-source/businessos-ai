@@ -24,27 +24,34 @@ class InvitationRepository:
         )
         return result.scalar_one_or_none()
 
-    async def get_by_token(
+    async def get_by_token_hash(
         self,
-        token: str,
+        token_hash: str,
     ) -> Invitation | None:
         result = await self.db.execute(
             select(Invitation).where(
-                Invitation.token == token
+                Invitation.token_hash == token_hash
             )
         )
         return result.scalar_one_or_none()
 
-    async def get_pending_by_email(
+    async def get_pending_by_email_and_organisation(
         self,
+        organisation_id: UUID,
         email: str,
     ) -> list[Invitation]:
+        """
+        Return pending invitations for an email within
+        a specific organisation.
+        """
         result = await self.db.execute(
             select(Invitation).where(
+                Invitation.organisation_id == organisation_id,
                 Invitation.email == email,
                 Invitation.status == InvitationStatus.PENDING,
             )
         )
+
         return list(result.scalars().all())
 
     async def create(

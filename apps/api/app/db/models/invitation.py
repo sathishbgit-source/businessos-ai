@@ -20,7 +20,7 @@ class Invitation(Base):
     __table_args__ = (
         Index("ix_invitation_organisation_id", "organisation_id"),
         Index("ix_invitation_email", "email"),
-        Index("ix_invitation_token", "token"),
+        Index("ix_invitation_token_hash", "token_hash"),
         Index("ix_invitation_expires_at", "expires_at"),
     )
 
@@ -44,8 +44,8 @@ class Invitation(Base):
         nullable=False,
     )
 
-    token: Mapped[str] = mapped_column(
-        String(255),
+    token_hash: Mapped[str] = mapped_column(
+        String(64),
         unique=True,
         nullable=False,
     )
@@ -66,14 +66,32 @@ class Invitation(Base):
         nullable=True,
     )
 
+    created_by: Mapped[UUID | None] = mapped_column(
+        ForeignKey("users.id", ondelete="SET NULL"),
+        nullable=True,
+    )
+
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         default=datetime.utcnow,
+        nullable=False,
+    )
+
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        default=datetime.utcnow,
+        onupdate=datetime.utcnow,
+        nullable=False,
     )
 
     organisation: Mapped["Organisation"] = relationship(
         "Organisation",
         back_populates="invitations",
+    )
+
+    created_by_user: Mapped["User | None"] = relationship(
+        "User",
+        foreign_keys=[created_by],
     )
 
     role: Mapped["Role"] = relationship(
