@@ -7,16 +7,62 @@ from pydantic import BaseModel, ConfigDict, Field
 class OrganisationCreate(BaseModel):
     """Request schema for creating an organisation."""
 
-    name: str = Field(..., min_length=3, max_length=100)
-    slug: str = Field(..., min_length=3, max_length=100)
-    description: str | None = Field(default=None, max_length=500)
+    name: str = Field(
+        ...,
+        min_length=3,
+        max_length=100,
+    )
+
+    slug: str = Field(
+        ...,
+        min_length=3,
+        max_length=100,
+    )
+
+    description: str | None = Field(
+        default=None,
+        max_length=500,
+    )
 
 
 class OrganisationUpdate(BaseModel):
-    """Request schema for updating an organisation."""
+    """Request schema for updating organisation settings."""
 
-    name: str | None = Field(default=None, min_length=3, max_length=100)
-    description: str | None = Field(default=None, max_length=500)
+    name: str | None = Field(
+        default=None,
+        min_length=3,
+        max_length=100,
+    )
+
+    description: str | None = Field(
+        default=None,
+        max_length=500,
+    )
+
+    logo_url: str | None = Field(
+        default=None,
+        max_length=1000,
+    )
+
+    website: str | None = Field(
+        default=None,
+        max_length=255,
+    )
+
+    industry: str | None = Field(
+        default=None,
+        max_length=100,
+    )
+
+    country: str | None = Field(
+        default=None,
+        max_length=100,
+    )
+
+    timezone: str | None = Field(
+        default=None,
+        max_length=100,
+    )
 
 
 class OrganisationResponse(BaseModel):
