@@ -20,6 +20,10 @@ class OrganisationNotFound(BusinessOSError):
     """Raised when the specified organisation does not exist."""
 
 
+class OrganisationAccessDenied(BusinessOSError):
+    """Raised when a user is not authorised to modify an organisation."""
+
+
 class InvitationAlreadyExists(BusinessOSError):
     """Raised when a pending invitation already exists."""
 
