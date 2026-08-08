@@ -6,6 +6,7 @@ from app.core.exceptions import (
     OrganisationAccessDenied,
     OrganisationNotFound,
 )
+from app.db.enums import MemberStatus
 from app.db.models.organisation import Organisation
 from app.repositories.organisation_member_repository import (
     OrganisationMemberRepository,
@@ -100,7 +101,7 @@ class UpdateOrganisationService:
 
         if (
             member is None
-            or member.status.value != "active"
+            or member.status != MemberStatus.ACTIVE
             or member.role.name != "Administrator"
         ):
             raise OrganisationAccessDenied(

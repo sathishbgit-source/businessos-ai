@@ -2,6 +2,7 @@ from uuid import UUID
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
 
 from app.db.models.organisation_member import OrganisationMember
 
@@ -29,7 +30,9 @@ class OrganisationMemberRepository:
         user_id: UUID,
     ) -> OrganisationMember | None:
         result = await self.db.execute(
-            select(OrganisationMember).where(
+            select(OrganisationMember)
+            .options(selectinload(OrganisationMember.role))
+            .where(
                 OrganisationMember.organisation_id == organisation_id,
                 OrganisationMember.user_id == user_id,
             )
