@@ -25,6 +25,7 @@ from app.repositories.organisation_repository import (
 from app.repositories.role_repository import RoleRepository
 from app.repositories.user_repository import UserRepository
 
+
 class InviteMemberService:
     """Service responsible for inviting users to an organisation."""
 
@@ -50,12 +51,10 @@ class InviteMemberService:
         self,
         *,
         organisation_id,
-        role_id,
+        role_name,
         email: str,
         invited_by,
     ) -> str:
-
-
         """Create an invitation and return the raw invitation token."""
 
         organisation = await self._load_organisation(
@@ -63,7 +62,7 @@ class InviteMemberService:
         )
 
         role = await self._load_role(
-            role_id
+            role_name
         )
 
         normalized_email = self._normalize_email(
@@ -99,6 +98,7 @@ class InviteMemberService:
         await self.db.commit()
 
         return raw_token
+
     async def _load_organisation(
         self,
         organisation_id,
@@ -120,17 +120,17 @@ class InviteMemberService:
 
     async def _load_role(
         self,
-        role_id,
+        role_name,
     ):
         """Load invitation role."""
 
-        role = await self.role_repository.get_by_id(
-            role_id
+        role = await self.role_repository.get_by_name(
+            role_name
         )
 
         if role is None:
             raise RoleNotFound(
-                f"Role '{role_id}' does not exist."
+                f"Role '{role_name}' does not exist."
             )
 
         return role
@@ -149,7 +149,6 @@ class InviteMemberService:
         organisation_id,
         email: str,
     ) -> None:
-       
         """Ensure the invited user is not already an organisation member."""
 
         user = await self.user_repository.get_by_email(

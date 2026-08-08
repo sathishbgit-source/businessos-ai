@@ -2,6 +2,7 @@ from uuid import UUID
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
 
 from app.db.enums import InvitationStatus
 from app.db.models.invitation import Invitation
@@ -22,6 +23,7 @@ class InvitationRepository:
                 Invitation.id == invitation_id
             )
         )
+
         return result.scalar_one_or_none()
 
     async def get_by_token_hash(
@@ -29,10 +31,15 @@ class InvitationRepository:
         token_hash: str,
     ) -> Invitation | None:
         result = await self.db.execute(
-            select(Invitation).where(
+            select(Invitation)
+            .options(
+                selectinload(Invitation.role)
+            )
+            .where(
                 Invitation.token_hash == token_hash
             )
         )
+
         return result.scalar_one_or_none()
 
     async def get_pending_by_email_and_organisation(
