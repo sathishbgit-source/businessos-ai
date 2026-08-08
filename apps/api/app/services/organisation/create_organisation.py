@@ -65,6 +65,8 @@ class CreateOrganisationService:
             role=admin_role,
         )
 
+        await self.db.commit()
+
         return organisation
 
     async def _validate_slug(
