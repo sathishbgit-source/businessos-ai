@@ -13,6 +13,9 @@ from app.repositories.user_repository import UserRepository
 from app.services.organisation.create_organisation import (
     CreateOrganisationService,
 )
+from app.services.organisation.update_organisation import (
+    UpdateOrganisationService,
+)
 
 
 def get_create_organisation_service(
@@ -27,3 +30,14 @@ def get_create_organisation_service(
         role_repository=RoleRepository(db),
         user_repository=UserRepository(db),
 )
+
+def get_update_organisation_service(
+    db: AsyncSession = Depends(get_db),
+) -> UpdateOrganisationService:
+    """Create UpdateOrganisationService with all dependencies."""
+
+    return UpdateOrganisationService(
+        db=db,
+        organisation_repository=OrganisationRepository(db),
+        organisation_member_repository=OrganisationMemberRepository(db),
+    )
