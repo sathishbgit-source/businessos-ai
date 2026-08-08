@@ -1,3 +1,4 @@
+from app.db.models.audit_log import AuditLog
 from app.db.models.invitation import Invitation
 from app.db.models.organisation import Organisation
 from app.db.models.organisation_member import OrganisationMember
@@ -16,4 +17,5 @@ __all__ = [
     "Organisation",
     "OrganisationMember",
     "Invitation",
+    "AuditLog",
 ]
