@@ -16,6 +16,7 @@ class UserNotFound(BusinessOSError):
 class RoleNotFound(BusinessOSError):
     """Raised when the required role does not exist."""
 
+
 class OrganisationNotFound(BusinessOSError):
     """Raised when the specified organisation does not exist."""
 
@@ -46,3 +47,11 @@ class InvitationRevoked(BusinessOSError):
 
 class InvitationAlreadyAccepted(BusinessOSError):
     """Raised when the invitation has already been accepted."""
+
+
+class NotificationNotFound(BusinessOSError):
+    """Raised when the specified notification does not exist."""
+
+
+class NotificationAccessDenied(BusinessOSError):
+    """Raised when a user is not authorised to access a notification."""

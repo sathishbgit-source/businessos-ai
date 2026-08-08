@@ -1,5 +1,6 @@
 from app.db.models.audit_log import AuditLog
 from app.db.models.invitation import Invitation
+from app.db.models.notification import Notification
 from app.db.models.organisation import Organisation
 from app.db.models.organisation_member import OrganisationMember
 from app.db.models.permission import Permission
@@ -18,4 +19,5 @@ __all__ = [
     "OrganisationMember",
     "Invitation",
     "AuditLog",
+    "Notification",
 ]

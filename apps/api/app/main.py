@@ -5,6 +5,9 @@ from app.api.v1.health import router as health_router
 from app.api.v1.invitations import (
     router as invitation_router,
 )
+from app.api.v1.notifications import (
+    router as notification_router,
+)
 from app.api.v1.organisations import (
     router as organisation_router,
 )
@@ -19,12 +22,15 @@ app = FastAPI(
 )
 
 # Register global exception handlers
+
 register_exception_handlers(app)
 
 app.include_router(health_router)
 app.include_router(auth_router)
 app.include_router(organisation_router)
 app.include_router(invitation_router)
+app.include_router(notification_router)
+
 
 @app.get("/")
 async def root():
