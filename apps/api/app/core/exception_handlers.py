@@ -3,6 +3,8 @@ from fastapi.responses import JSONResponse
 
 from app.core.exceptions import (
     BusinessOSError,
+    NotificationAccessDenied,
+    NotificationNotFound,
     OrganisationAccessDenied,
     OrganisationAlreadyExists,
     OrganisationNotFound,
@@ -38,6 +40,26 @@ def register_exception_handlers(app: FastAPI) -> None:
     async def organisation_access_denied_handler(
         request: Request,
         exc: OrganisationAccessDenied,
+    ):
+        return JSONResponse(
+            status_code=status.HTTP_403_FORBIDDEN,
+            content={"detail": str(exc)},
+        )
+
+    @app.exception_handler(NotificationNotFound)
+    async def notification_not_found_handler(
+        request: Request,
+        exc: NotificationNotFound,
+    ):
+        return JSONResponse(
+            status_code=status.HTTP_404_NOT_FOUND,
+            content={"detail": str(exc)},
+        )
+
+    @app.exception_handler(NotificationAccessDenied)
+    async def notification_access_denied_handler(
+        request: Request,
+        exc: NotificationAccessDenied,
     ):
         return JSONResponse(
             status_code=status.HTTP_403_FORBIDDEN,
