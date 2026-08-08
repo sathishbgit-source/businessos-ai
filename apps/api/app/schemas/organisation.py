@@ -72,6 +72,11 @@ class OrganisationResponse(BaseModel):
     name: str
     slug: str
     description: str | None
+    logo_url: str | None
+    website: str | None
+    industry: str | None
+    country: str | None
+    timezone: str | None
     owner_id: UUID
     created_at: datetime
     updated_at: datetime
