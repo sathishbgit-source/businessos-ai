@@ -96,6 +96,7 @@ class Invitation(Base):
 
     role: Mapped["Role"] = relationship(
         "Role",
+        lazy="selectin",
     )
 
     def __repr__(self) -> str:

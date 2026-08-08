@@ -2,6 +2,9 @@ from fastapi import FastAPI
 
 from app.api.v1.auth import router as auth_router
 from app.api.v1.health import router as health_router
+from app.api.v1.invitations import (
+    router as invitation_router,
+)
 from app.api.v1.organisations import (
     router as organisation_router,
 )
@@ -18,11 +21,10 @@ app = FastAPI(
 # Register global exception handlers
 register_exception_handlers(app)
 
-# Register API routers
 app.include_router(health_router)
 app.include_router(auth_router)
 app.include_router(organisation_router)
-
+app.include_router(invitation_router)
 
 @app.get("/")
 async def root():
