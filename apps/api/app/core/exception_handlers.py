@@ -1,97 +1,175 @@
-from fastapi import FastAPI, Request, status
+import logging
+
+from fastapi import FastAPI, HTTPException, Request, status
+from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 
 from app.core.exceptions import (
     BusinessOSError,
+    InvitationAlreadyAccepted,
+    InvitationAlreadyExists,
+    InvitationExpired,
+    InvitationNotFound,
+    InvitationRevoked,
     NotificationAccessDenied,
     NotificationNotFound,
     OrganisationAccessDenied,
     OrganisationAlreadyExists,
+    OrganisationMemberAlreadyExists,
     OrganisationNotFound,
     RoleNotFound,
     UserNotFound,
 )
 
+logger = logging.getLogger(__name__)
+
+
+BUSINESS_EXCEPTION_STATUS_CODES = {
+    OrganisationAlreadyExists: status.HTTP_409_CONFLICT,
+    OrganisationNotFound: status.HTTP_404_NOT_FOUND,
+    OrganisationAccessDenied: status.HTTP_403_FORBIDDEN,
+    OrganisationMemberAlreadyExists: status.HTTP_409_CONFLICT,
+    UserNotFound: status.HTTP_404_NOT_FOUND,
+    RoleNotFound: status.HTTP_404_NOT_FOUND,
+    InvitationAlreadyExists: status.HTTP_409_CONFLICT,
+    InvitationNotFound: status.HTTP_404_NOT_FOUND,
+    InvitationExpired: status.HTTP_410_GONE,
+    InvitationRevoked: status.HTTP_410_GONE,
+    InvitationAlreadyAccepted: status.HTTP_409_CONFLICT,
+    NotificationNotFound: status.HTTP_404_NOT_FOUND,
+    NotificationAccessDenied: status.HTTP_403_FORBIDDEN,
+}
+
+
+BUSINESS_EXCEPTION_CODES = {
+    OrganisationAlreadyExists: "ORGANISATION_ALREADY_EXISTS",
+    OrganisationNotFound: "ORGANISATION_NOT_FOUND",
+    OrganisationAccessDenied: "ORGANISATION_ACCESS_DENIED",
+    OrganisationMemberAlreadyExists: "ORGANISATION_MEMBER_ALREADY_EXISTS",
+    UserNotFound: "USER_NOT_FOUND",
+    RoleNotFound: "ROLE_NOT_FOUND",
+    InvitationAlreadyExists: "INVITATION_ALREADY_EXISTS",
+    InvitationNotFound: "INVITATION_NOT_FOUND",
+    InvitationExpired: "INVITATION_EXPIRED",
+    InvitationRevoked: "INVITATION_REVOKED",
+    InvitationAlreadyAccepted: "INVITATION_ALREADY_ACCEPTED",
+    NotificationNotFound: "NOTIFICATION_NOT_FOUND",
+    NotificationAccessDenied: "NOTIFICATION_ACCESS_DENIED",
+}
+
+
+def _business_error_code(exc: BusinessOSError) -> str:
+    return BUSINESS_EXCEPTION_CODES.get(
+        type(exc),
+        "BUSINESS_ERROR",
+    )
+
+
+def _business_error_status(exc: BusinessOSError) -> int:
+    return BUSINESS_EXCEPTION_STATUS_CODES.get(
+        type(exc),
+        status.HTTP_400_BAD_REQUEST,
+    )
+
 
 def register_exception_handlers(app: FastAPI) -> None:
-    """Register application exception handlers."""
-
-    @app.exception_handler(OrganisationAlreadyExists)
-    async def organisation_exists_handler(
-        request: Request,
-        exc: OrganisationAlreadyExists,
-    ):
-        return JSONResponse(
-            status_code=status.HTTP_409_CONFLICT,
-            content={"detail": str(exc)},
-        )
-
-    @app.exception_handler(OrganisationNotFound)
-    async def organisation_not_found_handler(
-        request: Request,
-        exc: OrganisationNotFound,
-    ):
-        return JSONResponse(
-            status_code=status.HTTP_404_NOT_FOUND,
-            content={"detail": str(exc)},
-        )
-
-    @app.exception_handler(OrganisationAccessDenied)
-    async def organisation_access_denied_handler(
-        request: Request,
-        exc: OrganisationAccessDenied,
-    ):
-        return JSONResponse(
-            status_code=status.HTTP_403_FORBIDDEN,
-            content={"detail": str(exc)},
-        )
-
-    @app.exception_handler(NotificationNotFound)
-    async def notification_not_found_handler(
-        request: Request,
-        exc: NotificationNotFound,
-    ):
-        return JSONResponse(
-            status_code=status.HTTP_404_NOT_FOUND,
-            content={"detail": str(exc)},
-        )
-
-    @app.exception_handler(NotificationAccessDenied)
-    async def notification_access_denied_handler(
-        request: Request,
-        exc: NotificationAccessDenied,
-    ):
-        return JSONResponse(
-            status_code=status.HTTP_403_FORBIDDEN,
-            content={"detail": str(exc)},
-        )
-
-    @app.exception_handler(UserNotFound)
-    async def user_not_found_handler(
-        request: Request,
-        exc: UserNotFound,
-    ):
-        return JSONResponse(
-            status_code=status.HTTP_404_NOT_FOUND,
-            content={"detail": str(exc)},
-        )
-
-    @app.exception_handler(RoleNotFound)
-    async def role_not_found_handler(
-        request: Request,
-        exc: RoleNotFound,
-    ):
-        return JSONResponse(
-            status_code=status.HTTP_404_NOT_FOUND,
-            content={"detail": str(exc)},
-        )
+    """Register global application exception handlers."""
 
     @app.exception_handler(BusinessOSError)
     async def business_error_handler(
         request: Request,
         exc: BusinessOSError,
-    ):
+    ) -> JSONResponse:
         return JSONResponse(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            content={"detail": str(exc)},
+            status_code=_business_error_status(exc),
+            content={
+                "success": False,
+                "error": {
+                    "code": _business_error_code(exc),
+                    "message": str(exc),
+                    "details": None,
+                },
+            },
+        )
+
+    @app.exception_handler(HTTPException)
+    async def http_exception_handler(
+        request: Request,
+        exc: HTTPException,
+    ) -> JSONResponse:
+        detail = exc.detail
+
+        if isinstance(detail, str):
+            message = detail
+            details = None
+        else:
+            message = "Request failed"
+            details = detail
+
+        return JSONResponse(
+            status_code=exc.status_code,
+            headers=exc.headers,
+            content={
+                "success": False,
+                "error": {
+                    "code": "HTTP_ERROR",
+                    "message": message,
+                    "details": details,
+                },
+            },
+        )
+
+    @app.exception_handler(RequestValidationError)
+    async def validation_error_handler(
+        request: Request,
+        exc: RequestValidationError,
+    ) -> JSONResponse:
+        details = []
+
+        for error in exc.errors():
+            location = error.get("loc", ())
+            field = ".".join(str(item) for item in location)
+
+            details.append(
+                {
+                    "field": field,
+                    "message": error.get(
+                        "msg",
+                        "Invalid value",
+                    ),
+                }
+            )
+
+        return JSONResponse(
+            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
+            content={
+                "success": False,
+                "error": {
+                    "code": "VALIDATION_ERROR",
+                    "message": "Request validation failed",
+                    "details": details,
+                },
+            },
+        )
+
+    @app.exception_handler(Exception)
+    async def unhandled_exception_handler(
+        request: Request,
+        exc: Exception,
+    ) -> JSONResponse:
+        logger.exception(
+            "Unhandled application exception",
+            exc_info=exc,
+        )
+
+        return JSONResponse(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            content={
+                "success": False,
+                "error": {
+                    "code": "INTERNAL_SERVER_ERROR",
+                    "message": "An unexpected error occurred",
+                    "details": None,
+                },
+            },
         )
