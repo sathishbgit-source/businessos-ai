@@ -48,3 +48,158 @@ a {
     color-scheme: dark;
   }
 }
+
+.app-shell {
+  min-height: 100vh;
+  display: flex;
+  background: var(--background);
+}
+
+.app-sidebar {
+  width: 240px;
+  min-height: 100vh;
+  flex-shrink: 0;
+  border-right: 1px solid #e5e7eb;
+  background: #ffffff;
+}
+
+.app-sidebar-brand {
+  height: 64px;
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.app-brand {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.app-sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 16px 12px;
+}
+
+.app-nav-item {
+  display: block;
+  padding: 10px 12px;
+  border-radius: 6px;
+  font-size: 14px;
+  color: #4b5563;
+  transition:
+    background-color 150ms ease,
+    color 150ms ease;
+}
+
+.app-nav-item:hover {
+  background: #f3f4f6;
+  color: #111827;
+}
+
+.app-nav-item.is-active {
+  background: #111827;
+  color: #ffffff;
+}
+
+.app-main {
+  min-width: 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-topbar {
+  position: relative;
+  height: 64px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  border-bottom: 1px solid #e5e7eb;
+  background: #ffffff;
+}
+
+.app-topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.app-topbar-title {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.app-topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.app-content {
+  flex: 1;
+  padding: 24px;
+}
+
+.app-mobile-menu-button {
+  display: none;
+}
+
+.app-mobile-menu {
+  position: absolute;
+  top: 64px;
+  left: 0;
+  right: 0;
+  z-index: 10;
+  padding: 16px;
+  border-bottom: 1px solid #e5e7eb;
+  background: #ffffff;
+}
+
+@media (max-width: 768px) {
+  .app-sidebar {
+    display: none;
+  }
+
+  .app-mobile-menu-button {
+    display: inline-flex;
+  }
+
+  .app-topbar {
+    padding: 0 16px;
+  }
+
+  .app-content {
+    padding: 16px;
+  }
+}
+
+.app-mobile-nav-item {
+  display: block;
+  padding: 12px;
+  border-radius: 6px;
+  color: #4b5563;
+  font-size: 14px;
+}
+
+.app-mobile-nav-item:hover {
+  background: #f3f4f6;
+  color: #111827;
+}
+
+.app-mobile-nav-item.is-active {
+  background: #111827;
+  color: #ffffff;
+}
+
+@media (max-width: 768px) {
+  .app-mobile-menu {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+}
