@@ -17,6 +17,10 @@ from app.schemas.notification import (
     NotificationResponse,
     UnreadNotificationCountResponse,
 )
+from app.schemas.pagination import (
+    PaginationParams,
+    PaginationResponse,
+)
 from app.services.notification.count_unread_notifications import (
     CountUnreadNotificationsService,
 )
@@ -41,17 +45,20 @@ router = APIRouter(
     response_model=NotificationListResponse,
 )
 async def list_notifications(
+    pagination: PaginationParams = Depends(),
     unread_only: bool = False,
     current_user: User = Depends(get_current_user),
     service: ListNotificationsService = Depends(
         get_list_notifications_service,
     ),
 ):
-    """List notifications for the authenticated user."""
+    """List paginated notifications for the authenticated user."""
 
-    notifications = await service.execute(
+    notifications, total = await service.execute(
         user_id=current_user.id,
         unread_only=unread_only,
+        offset=pagination.offset,
+        limit=pagination.page_size,
     )
 
     return NotificationListResponse(
@@ -59,7 +66,12 @@ async def list_notifications(
             NotificationResponse.model_validate(notification)
             for notification in notifications
         ],
-        total=len(notifications),
+        total=total,
+        pagination=PaginationResponse.from_total(
+            page=pagination.page,
+            page_size=pagination.page_size,
+            total=total,
+        ),
     )
 
 

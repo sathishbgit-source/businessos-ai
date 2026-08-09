@@ -37,28 +37,42 @@ class NotificationRepository:
         user_id: UUID,
         organisation_id: UUID | None = None,
         unread_only: bool = False,
-    ) -> list[Notification]:
-        query = select(Notification).where(
-            Notification.user_id == user_id
-        )
+        offset: int = 0,
+        limit: int = 20,
+    ) -> tuple[list[Notification], int]:
+        filters = [
+            Notification.user_id == user_id,
+        ]
 
         if organisation_id is not None:
-            query = query.where(
+            filters.append(
                 Notification.organisation_id == organisation_id
             )
 
         if unread_only:
-            query = query.where(
+            filters.append(
                 Notification.is_read.is_(False)
             )
 
-        query = query.order_by(
-            Notification.created_at.desc()
+        count_query = select(
+            func.count(Notification.id)
+        ).where(*filters)
+
+        count_result = await self.session.execute(count_query)
+        total = count_result.scalar_one()
+
+        query = (
+            select(Notification)
+            .where(*filters)
+            .order_by(Notification.created_at.desc())
+            .offset(offset)
+            .limit(limit)
         )
 
         result = await self.session.execute(query)
+        notifications = list(result.scalars().all())
 
-        return list(result.scalars().all())
+        return notifications, total
 
     async def count_unread(
         self,

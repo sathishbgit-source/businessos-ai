@@ -23,11 +23,15 @@ class ListNotificationsService:
         user_id: UUID,
         organisation_id: UUID | None = None,
         unread_only: bool = False,
-    ) -> list[Notification]:
-        """Return notifications belonging to the authenticated user."""
+        offset: int = 0,
+        limit: int = 20,
+    ) -> tuple[list[Notification], int]:
+        """Return paginated notifications for the authenticated user."""
 
         return await self.notification_repository.list_for_user(
             user_id=user_id,
             organisation_id=organisation_id,
             unread_only=unread_only,
+            offset=offset,
+            limit=limit,
         )
