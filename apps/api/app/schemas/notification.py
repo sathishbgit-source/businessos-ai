@@ -5,6 +5,7 @@ from pydantic import BaseModel
 from pydantic import ConfigDict
 
 from app.db.enums.notification import NotificationType
+from app.schemas.pagination import PaginationResponse
 
 
 class NotificationCreate(BaseModel):
@@ -34,6 +35,7 @@ class NotificationResponse(BaseModel):
 class NotificationListResponse(BaseModel):
     items: list[NotificationResponse]
     total: int
+    pagination: PaginationResponse
 
 
 class UnreadNotificationCountResponse(BaseModel):
