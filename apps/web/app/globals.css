@@ -1,15 +1,5 @@
+@import "../styles/theme.css";
 @import "../styles/ui.css";
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
 
 html {
   height: 100%;
@@ -25,9 +15,9 @@ body {
   min-height: 100%;
   display: flex;
   flex-direction: column;
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  color: var(--color-foreground);
+  background: var(--color-background);
+  font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -43,66 +33,68 @@ a {
   text-decoration: none;
 }
 
-@media (prefers-color-scheme: dark) {
-  html {
-    color-scheme: dark;
-  }
-}
+/* =========================================================
+   Application Shell
+   ========================================================= */
 
 .app-shell {
   min-height: 100vh;
   display: flex;
-  background: var(--background);
+  background: var(--color-background);
 }
 
 .app-sidebar {
-  width: 240px;
+  width: var(--sidebar-width);
   min-height: 100vh;
   flex-shrink: 0;
-  border-right: 1px solid #e5e7eb;
-  background: #ffffff;
+  border-right: 1px solid var(--color-border);
+  background: var(--color-card);
 }
 
 .app-sidebar-brand {
-  height: 64px;
+  height: var(--topbar-height);
   display: flex;
   align-items: center;
-  padding: 0 20px;
-  border-bottom: 1px solid #e5e7eb;
+  padding: 0 var(--space-5);
+  border-bottom: 1px solid var(--color-border);
 }
 
 .app-brand {
-  font-size: 18px;
-  font-weight: 700;
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
 }
 
 .app-sidebar-nav {
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  padding: 16px 12px;
+  gap: var(--space-1);
+  padding: var(--space-4) var(--space-3);
 }
 
 .app-nav-item {
   display: block;
-  padding: 10px 12px;
-  border-radius: 6px;
-  font-size: 14px;
-  color: #4b5563;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-sm);
+  color: var(--color-muted-foreground);
   transition:
-    background-color 150ms ease,
-    color 150ms ease;
+    background-color var(--duration-normal) ease,
+    color var(--duration-normal) ease;
 }
 
 .app-nav-item:hover {
-  background: #f3f4f6;
-  color: #111827;
+  background: var(--color-muted);
+  color: var(--color-foreground);
 }
 
 .app-nav-item.is-active {
-  background: #111827;
-  color: #ffffff;
+  background: var(--color-primary);
+  color: var(--color-primary-foreground);
 }
+
+/* =========================================================
+   Main Content
+   ========================================================= */
 
 .app-main {
   min-width: 0;
@@ -113,37 +105,41 @@ a {
 
 .app-topbar {
   position: relative;
-  height: 64px;
+  height: var(--topbar-height);
   flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 24px;
-  border-bottom: 1px solid #e5e7eb;
-  background: #ffffff;
+  padding: 0 var(--space-6);
+  border-bottom: 1px solid var(--color-border);
+  background: var(--color-card);
 }
 
 .app-topbar-left {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: var(--space-3);
 }
 
 .app-topbar-title {
-  font-size: 18px;
-  font-weight: 600;
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
 }
 
 .app-topbar-actions {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: var(--space-3);
 }
 
 .app-content {
   flex: 1;
-  padding: 24px;
+  padding: var(--content-padding);
 }
+
+/* =========================================================
+   Mobile Navigation
+   ========================================================= */
 
 .app-mobile-menu-button {
   display: none;
@@ -151,14 +147,80 @@ a {
 
 .app-mobile-menu {
   position: absolute;
-  top: 64px;
+  top: var(--topbar-height);
   left: 0;
   right: 0;
-  z-index: 10;
-  padding: 16px;
-  border-bottom: 1px solid #e5e7eb;
-  background: #ffffff;
+  z-index: var(--z-dropdown);
+  padding: var(--space-4);
+  border-bottom: 1px solid var(--color-border);
+  background: var(--color-card);
 }
+
+.app-mobile-nav-item {
+  display: block;
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  color: var(--color-muted-foreground);
+  font-size: var(--font-size-sm);
+}
+
+.app-mobile-nav-item:hover {
+  background: var(--color-muted);
+  color: var(--color-foreground);
+}
+
+.app-mobile-nav-item.is-active {
+  background: var(--color-primary);
+  color: var(--color-primary-foreground);
+}
+
+/* =========================================================
+   Typography
+   ========================================================= */
+
+.text-display {
+  font-size: var(--font-size-4xl);
+  line-height: var(--line-height-tight);
+  font-weight: var(--font-weight-bold);
+}
+
+.text-h1 {
+  font-size: var(--font-size-3xl);
+  line-height: var(--line-height-tight);
+  font-weight: var(--font-weight-bold);
+}
+
+.text-h2 {
+  font-size: var(--font-size-2xl);
+  line-height: var(--line-height-tight);
+  font-weight: var(--font-weight-semibold);
+}
+
+.text-h3 {
+  font-size: var(--font-size-xl);
+  line-height: var(--line-height-tight);
+  font-weight: var(--font-weight-semibold);
+}
+
+.text-body {
+  font-size: var(--font-size-md);
+  line-height: var(--line-height-normal);
+}
+
+.text-small {
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-normal);
+}
+
+.text-caption {
+  font-size: var(--font-size-xs);
+  line-height: var(--line-height-normal);
+  color: var(--color-muted-foreground);
+}
+
+/* =========================================================
+   Responsive Layout
+   ========================================================= */
 
 @media (max-width: 768px) {
   .app-sidebar {
@@ -170,36 +232,16 @@ a {
   }
 
   .app-topbar {
-    padding: 0 16px;
+    padding: 0 var(--space-4);
   }
 
   .app-content {
-    padding: 16px;
+    padding: var(--space-4);
   }
-}
 
-.app-mobile-nav-item {
-  display: block;
-  padding: 12px;
-  border-radius: 6px;
-  color: #4b5563;
-  font-size: 14px;
-}
-
-.app-mobile-nav-item:hover {
-  background: #f3f4f6;
-  color: #111827;
-}
-
-.app-mobile-nav-item.is-active {
-  background: #111827;
-  color: #ffffff;
-}
-
-@media (max-width: 768px) {
   .app-mobile-menu {
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: var(--space-1);
   }
 }
