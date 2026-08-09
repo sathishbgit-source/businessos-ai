@@ -1,14 +1,17 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Button, Dropdown } from "../ui";
 import { navigationItems } from "../../lib/navigation";
+import { useUIStore } from "../../lib/store";
 
 export function Topbar() {
-  const [menuOpen, setMenuOpen] = useState(false);
   const pathname = usePathname();
+
+  const menuOpen = useUIStore((state) => state.mobileMenuOpen);
+  const toggleMobileMenu = useUIStore((state) => state.toggleMobileMenu);
+  const closeMobileMenu = useUIStore((state) => state.closeMobileMenu);
 
   return (
     <header className="app-topbar">
@@ -18,7 +21,7 @@ export function Topbar() {
           className="app-mobile-menu-button"
           aria-label="Toggle navigation menu"
           aria-expanded={menuOpen}
-          onClick={() => setMenuOpen((open) => !open)}
+          onClick={toggleMobileMenu}
         >
           ☰
         </Button>
@@ -31,17 +34,15 @@ export function Topbar() {
           label="Account"
           items={[
             { label: "Profile", value: "profile" },
-            { label: "Settings", value: "settings" },           { label: "Sign out", value: "sign-out" },
+            { label: "Settings", value: "settings" },
+            { label: "Sign out", value: "sign-out" },
           ]}
           onSelect={() => undefined}
         />
       </div>
 
       {menuOpen ? (
-        <nav
-          className="app-mobile-menu"
-          aria-label="Mobile navigation"
-        >
+        <nav className="app-mobile-menu" aria-label="Mobile navigation">
           {navigationItems.map((item) => {
             const isActive =
               pathname === item.href ||
@@ -55,7 +56,7 @@ export function Topbar() {
                   isActive ? "is-active" : ""
                 }`}
                 aria-current={isActive ? "page" : undefined}
-                onClick={() => setMenuOpen(false)}
+                onClick={closeMobileMenu}
               >
                 {item.label}
               </Link>
