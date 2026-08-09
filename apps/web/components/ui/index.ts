@@ -30,3 +30,9 @@ export type { TableColumn, TableProps } from "./Table";
 
 export { Toast } from "./Toast";
 export type { ToastProps } from "./Toast";
+
+export { Trend } from "./Trend";
+export type { TrendIntent, TrendProps } from "./Trend";
+
+export { StatusBadge } from "./StatusBadge";
+export type { Status, StatusBadgeProps } from "./StatusBadge";
