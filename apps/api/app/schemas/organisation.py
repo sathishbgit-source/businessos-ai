@@ -17,6 +17,7 @@ class OrganisationCreate(BaseModel):
         ...,
         min_length=3,
         max_length=100,
+        pattern=r"^[a-z0-9]+(?:-[a-z0-9]+)*$",
     )
 
     description: str | None = Field(
