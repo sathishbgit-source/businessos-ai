@@ -9,23 +9,56 @@
   --color-muted: #f3f4f6;
   --color-muted-foreground: #6b7280;
 
+  /* Primary */
   --color-primary: #111827;
+  --color-primary-hover: #1f2937;
+  --color-primary-active: #030712;
   --color-primary-foreground: #ffffff;
 
+  /* Secondary */
   --color-secondary: #f3f4f6;
+  --color-secondary-hover: #e5e7eb;
+  --color-secondary-active: #d1d5db;
   --color-secondary-foreground: #111827;
 
+  /* Accent */
   --color-accent: #f3f4f6;
   --color-accent-foreground: #111827;
 
+  /* Form / Border */
   --color-border: #e5e7eb;
   --color-input: #d1d5db;
   --color-ring: #6b7280;
 
+  /* Semantic colors */
   --color-success: #15803d;
+  --color-success-soft: #dcfce7;
+  --color-success-foreground: #166534;
+
   --color-warning: #a16207;
-  --color-error: #dc2626;
+  --color-warning-soft: #fef3c7;
+  --color-warning-foreground: #92400e;
+
+  --color-danger: #dc2626;
+  --color-danger-soft: #fee2e2;
+  --color-danger-foreground: #991b1b;
+
   --color-info: #2563eb;
+  --color-info-soft: #dbeafe;
+  --color-info-foreground: #1e40af;
+
+  --color-neutral: #6b7280;
+  --color-neutral-soft: #f3f4f6;
+  --color-neutral-foreground: #374151;
+
+  /* Chart colors */
+  --color-chart-primary: #111827;
+  --color-chart-secondary: #6b7280;
+  --color-chart-success: #15803d;
+  --color-chart-warning: #a16207;
+  --color-chart-danger: #dc2626;
+  --color-chart-grid: #e5e7eb;
+  --color-chart-label: #6b7280;
 
   /* Typography */
   --font-sans: var(--font-geist-sans), Arial, Helvetica, sans-serif;
@@ -102,9 +135,13 @@
   --color-muted-foreground: #a3a3a3;
 
   --color-primary: #ededed;
+  --color-primary-hover: #ffffff;
+  --color-primary-active: #d4d4d4;
   --color-primary-foreground: #171717;
 
   --color-secondary: #262626;
+  --color-secondary-hover: #404040;
+  --color-secondary-active: #525252;
   --color-secondary-foreground: #ededed;
 
   --color-accent: #262626;
@@ -114,10 +151,35 @@
   --color-input: #525252;
   --color-ring: #a3a3a3;
 
+  /* Semantic colors */
   --color-success: #4ade80;
+  --color-success-soft: #14532d;
+  --color-success-foreground: #bbf7d0;
+
   --color-warning: #facc15;
-  --color-error: #f87171;
+  --color-warning-soft: #713f12;
+  --color-warning-foreground: #fef08a;
+
+  --color-danger: #f87171;
+  --color-danger-soft: #7f1d1d;
+  --color-danger-foreground: #fecaca;
+
   --color-info: #60a5fa;
+  --color-info-soft: #1e3a8a;
+  --color-info-foreground: #bfdbfe;
+
+  --color-neutral: #a3a3a3;
+  --color-neutral-soft: #262626;
+  --color-neutral-foreground: #d4d4d4;
+
+  /* Chart colors */
+  --color-chart-primary: #ededed;
+  --color-chart-secondary: #a3a3a3;
+  --color-chart-success: #4ade80;
+  --color-chart-warning: #facc15;
+  --color-chart-danger: #f87171;
+  --color-chart-grid: #404040;
+  --color-chart-label: #a3a3a3;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -132,9 +194,13 @@
     --color-muted-foreground: #a3a3a3;
 
     --color-primary: #ededed;
+    --color-primary-hover: #ffffff;
+    --color-primary-active: #d4d4d4;
     --color-primary-foreground: #171717;
 
     --color-secondary: #262626;
+    --color-secondary-hover: #404040;
+    --color-secondary-active: #525252;
     --color-secondary-foreground: #ededed;
 
     --color-accent: #262626;
@@ -143,5 +209,33 @@
     --color-border: #404040;
     --color-input: #525252;
     --color-ring: #a3a3a3;
+
+    --color-success: #4ade80;
+    --color-success-soft: #14532d;
+    --color-success-foreground: #bbf7d0;
+
+    --color-warning: #facc15;
+    --color-warning-soft: #713f12;
+    --color-warning-foreground: #fef08a;
+
+    --color-danger: #f87171;
+    --color-danger-soft: #7f1d1d;
+    --color-danger-foreground: #fecaca;
+
+    --color-info: #60a5fa;
+    --color-info-soft: #1e3a8a;
+    --color-info-foreground: #bfdbfe;
+
+    --color-neutral: #a3a3a3;
+    --color-neutral-soft: #262626;
+    --color-neutral-foreground: #d4d4d4;
+
+    --color-chart-primary: #ededed;
+    --color-chart-secondary: #a3a3a3;
+    --color-chart-success: #4ade80;
+    --color-chart-warning: #facc15;
+    --color-chart-danger: #f87171;
+    --color-chart-grid: #404040;
+    --color-chart-label: #a3a3a3;
   }
 }

@@ -1,4 +1,4 @@
-import { Card } from "../../../components/ui";
+import { Card, Trend } from "../../../components/ui";
 
 const kpis = [
   {
@@ -6,24 +6,28 @@ const kpis = [
     value: "$128,450",
     change: "+12.5%",
     detail: "vs. previous month",
+    intent: "positive" as const,
   },
   {
     label: "Total Orders",
     value: "1,284",
     change: "+8.2%",
     detail: "vs. previous month",
+    intent: "positive" as const,
   },
   {
     label: "Active Customers",
     value: "642",
     change: "+5.4%",
     detail: "vs. previous month",
+    intent: "positive" as const,
   },
   {
     label: "Pending Orders",
     value: "38",
     change: "-4.1%",
     detail: "vs. previous month",
+    intent: "positive" as const,
   },
 ];
 
@@ -67,14 +71,22 @@ export default function DashboardPage() {
         </div>
       </header>
 
-      <section className="dashboard-kpi-grid" aria-label="Key performance indicators">
+      <section
+        className="dashboard-kpi-grid"
+        aria-label="Key performance indicators"
+      >
         {kpis.map((kpi) => (
           <Card key={kpi.label} className="dashboard-kpi-card">
             <p className="dashboard-kpi-label">{kpi.label}</p>
             <p className="dashboard-kpi-value">{kpi.value}</p>
-            <p className="dashboard-kpi-change">
-              <span>{kpi.change}</span> {kpi.detail}
-            </p>
+
+            <div className="dashboard-kpi-change">
+              <Trend
+                value={kpi.change}
+                label={kpi.detail}
+                intent={kpi.intent}
+              />
+            </div>
           </Card>
         ))}
       </section>
