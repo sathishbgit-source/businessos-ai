@@ -27,7 +27,7 @@ const kpis = [
     value: "38",
     change: "-4.1%",
     detail: "vs. previous month",
-    intent: "positive" as const,
+    intent: "negative" as const,
   },
 ];
 
@@ -129,14 +129,17 @@ export default function DashboardPage() {
               <strong>1,284</strong>
               <span>Total orders</span>
             </div>
+
             <div>
               <strong>1,146</strong>
               <span>Completed</span>
             </div>
+
             <div>
               <strong>38</strong>
               <span>Pending</span>
             </div>
+
             <div>
               <strong>100</strong>
               <span>Processing</span>
@@ -157,6 +160,7 @@ export default function DashboardPage() {
                   <strong>{activity.title}</strong>
                   <p>{activity.description}</p>
                 </div>
+
                 <time>{activity.time}</time>
               </div>
             ))}

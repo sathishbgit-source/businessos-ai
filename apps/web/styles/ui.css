@@ -538,7 +538,11 @@
   flex: 1;
   min-width: 12px;
   border-radius: 4px 4px 0 0;
-  background: var(--color-chart-primary);
+  background: linear-gradient(
+    180deg,
+    var(--color-chart-secondary),
+    var(--color-chart-primary)
+  );
 }
 
 .dashboard-chart-labels {
@@ -668,4 +672,344 @@
   .dashboard-actions {
     grid-template-columns: 1fr;
   }
+}
+
+/* =========================================================
+   BusinessOS Visual Refinement
+   Semantic typography, navigation, KPI, chart and actions
+   ========================================================= */
+
+/* ---------- Global typography ---------- */
+
+body {
+  color: var(--color-text-primary);
+  background: var(--color-background);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  color: var(--color-heading);
+}
+
+p {
+  color: var(--color-body);
+}
+
+/* ---------- Dashboard header ---------- */
+
+.dashboard-header h2 {
+  color: var(--color-heading);
+  font-size: 28px;
+  line-height: 1.2;
+  font-weight: 700;
+}
+
+.dashboard-header p {
+  margin-top: 6px;
+  color: var(--color-body);
+  font-size: 14px;
+}
+
+/* ---------- KPI ---------- */
+
+.dashboard-kpi-label {
+  color: var(--color-kpi-label);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.dashboard-kpi-value {
+  margin-top: 8px;
+  color: var(--color-kpi-value);
+  font-size: 28px;
+  line-height: 1.2;
+  font-weight: 700;
+}
+
+.dashboard-kpi-change {
+  margin-top: 8px;
+}
+
+/* ---------- Trend ---------- */
+
+.ui-trend {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--color-text-tertiary);
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.ui-trend-indicator {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.ui-trend-value {
+  font-weight: 600;
+}
+
+.ui-trend-label {
+  color: var(--color-text-tertiary);
+  font-weight: 400;
+}
+
+.ui-trend-positive {
+  color: var(--color-success);
+}
+
+.ui-trend-positive .ui-trend-label {
+  color: var(--color-text-tertiary);
+}
+
+.ui-trend-negative {
+  color: var(--color-danger);
+}
+
+.ui-trend-negative .ui-trend-label {
+  color: var(--color-text-tertiary);
+}
+
+.ui-trend-neutral {
+  color: var(--color-neutral);
+}
+
+.ui-trend-neutral .ui-trend-label {
+  color: var(--color-text-tertiary);
+}
+
+.ui-trend-warning {
+  color: var(--color-warning);
+}
+
+.ui-trend-warning .ui-trend-label {
+  color: var(--color-text-tertiary);
+}
+
+/* ---------- Status badge ---------- */
+
+.ui-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border-radius: var(--radius-full);
+  padding: 4px 9px;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.ui-status-badge-dot {
+  width: 6px;
+  height: 6px;
+  flex: 0 0 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.ui-status-badge-success {
+  color: var(--color-success-foreground);
+  background: var(--color-success-soft);
+}
+
+.ui-status-badge-warning {
+  color: var(--color-warning-foreground);
+  background: var(--color-warning-soft);
+}
+
+.ui-status-badge-danger {
+  color: var(--color-danger-foreground);
+  background: var(--color-danger-soft);
+}
+
+.ui-status-badge-info {
+  color: var(--color-info-foreground);
+  background: var(--color-info-soft);
+}
+
+.ui-status-badge-neutral {
+  color: var(--color-neutral-foreground);
+  background: var(--color-neutral-soft);
+}
+
+/* ---------- Cards ---------- */
+
+.ui-card-title {
+  color: var(--color-card-title);
+}
+
+.ui-card-description {
+  color: var(--color-card-description);
+}
+
+/* ---------- Sidebar ---------- */
+
+.sidebar-nav-item {
+  color: var(--color-nav);
+}
+
+.sidebar-nav-item:hover {
+  color: var(--color-nav-hover);
+}
+
+.sidebar-nav-item.active {
+  background: linear-gradient(
+    135deg,
+    var(--color-primary-start),
+    var(--color-primary-end)
+  );
+  color: var(--color-nav-active);
+}
+
+/* ---------- Primary actions ---------- */
+
+button.ui-button-primary,
+.ui-button-primary {
+  background: linear-gradient(
+    135deg,
+    var(--color-primary-start),
+    var(--color-primary-end)
+  );
+  color: var(--color-primary-foreground);
+}
+
+button.ui-button-primary:hover,
+.ui-button-primary:hover {
+  background: var(--color-primary-hover);
+}
+
+button.ui-button-primary:active,
+.ui-button-primary:active {
+  background: var(--color-primary-active);
+}
+
+/* ---------- Dashboard quick actions ---------- */
+
+.dashboard-action {
+  border: 1px solid var(--color-input);
+  border-radius: 8px;
+  background: var(--color-card);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 12px;
+  text-align: left;
+}
+
+.dashboard-action:hover {
+  border-color: var(--color-primary);
+  background: var(--color-accent);
+  color: var(--color-primary);
+}
+
+/* ---------- Order performance ---------- */
+
+.dashboard-order-summary div:nth-child(1) strong {
+  color: var(--color-text-primary);
+}
+
+.dashboard-order-summary div:nth-child(2) strong {
+  color: var(--color-success);
+}
+
+.dashboard-order-summary div:nth-child(3) strong {
+  color: var(--color-warning);
+}
+
+.dashboard-order-summary div:nth-child(4) strong {
+  color: var(--color-info);
+}
+
+.dashboard-order-summary div span {
+  color: var(--color-text-tertiary);
+}
+
+/* ---------- Recent activity ---------- */
+
+.dashboard-activity-item strong {
+  color: var(--color-text-primary);
+  font-size: 14px;
+}
+
+.dashboard-activity-item p {
+  margin-top: 4px;
+  color: var(--color-text-tertiary);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.dashboard-activity-item time {
+  color: var(--color-text-tertiary);
+  font-size: 12px;
+}
+
+/* ---------- Chart ---------- */
+
+.dashboard-chart-bar {
+  background: linear-gradient(
+    180deg,
+    var(--color-chart-secondary),
+    var(--color-chart-primary)
+  );
+}
+
+.dashboard-chart-labels {
+  color: var(--color-chart-label);
+  font-size: 12px;
+}
+
+.dashboard-chart-placeholder {
+  color: var(--color-chart-label);
+}
+
+/* ---------- Forms ---------- */
+
+input,
+textarea,
+select {
+  color: var(--color-text-primary);
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--color-text-muted);
+}
+
+/* ---------- Secondary text ---------- */
+
+.text-muted,
+.muted,
+.text-secondary {
+  color: var(--color-text-tertiary);
+}
+
+.text-caption,
+.caption {
+  color: var(--color-text-muted);
+}
+
+/* ---------- Disabled ---------- */
+
+button:disabled,
+input:disabled,
+textarea:disabled,
+select:disabled {
+  color: var(--color-text-disabled);
+}
+
+/* ---------- Dark mode consistency ---------- */
+
+[data-theme="dark"] body {
+  color: var(--color-text-primary);
+  background: var(--color-background);
 }
