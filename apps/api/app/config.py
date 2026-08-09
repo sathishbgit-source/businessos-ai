@@ -30,6 +30,13 @@ class Settings(BaseSettings):
     access_token_expire_minutes: int = 30
     refresh_token_expire_days: int = 7
 
+        # ------------------------------------------------------------------
+    # API Rate Limiting
+    # ------------------------------------------------------------------
+    rate_limit_enabled: bool = True
+    rate_limit_requests: int = 100
+    rate_limit_window_seconds: int = 60
+
     # ------------------------------------------------------------------
     # Future Infrastructure
     # ------------------------------------------------------------------
