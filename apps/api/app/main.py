@@ -1,20 +1,11 @@
 from fastapi import FastAPI
 
-from app.api.v1.auth import router as auth_router
-from app.api.v1.health import router as health_router
-from app.api.v1.invitations import (
-    router as invitation_router,
-)
-from app.api.v1.notifications import (
-    router as notification_router,
-)
-from app.api.v1.organisations import (
-    router as organisation_router,
-)
+from app.api.v1.router import router as api_v1_router
 from app.config import settings
 from app.core.exception_handlers import (
     register_exception_handlers,
 )
+
 
 app = FastAPI(
     title=settings.app_name,
@@ -22,14 +13,10 @@ app = FastAPI(
 )
 
 # Register global exception handlers
-
 register_exception_handlers(app)
 
-app.include_router(health_router)
-app.include_router(auth_router)
-app.include_router(organisation_router)
-app.include_router(invitation_router)
-app.include_router(notification_router)
+# API v1
+app.include_router(api_v1_router)
 
 
 @app.get("/")
