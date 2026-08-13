@@ -33,6 +33,10 @@ export const navigationItems: NavigationItem[] = [
     href: "/payments",
   },
   {
+    label: "Billing",
+    href: "/billing",
+  },
+  {
     label: "Notifications",
     href: "/notifications",
   },
