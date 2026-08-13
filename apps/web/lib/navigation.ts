@@ -17,6 +17,10 @@ export const navigationItems: NavigationItem[] = [
     href: "/products",
   },
   {
+    label: "Plans",
+    href: "/plans",
+  },
+  {
     label: "Sales",
     href: "/sales",
   },
