@@ -3,6 +3,7 @@ from app.db.models.billing_record import BillingRecord
 from app.db.models.invitation import Invitation
 from app.db.models.notification import Notification
 from app.db.models.organisation import Organisation
+from app.db.models.plan import Plan
 from app.db.models.organisation_member import OrganisationMember
 from app.db.models.permission import Permission
 from app.db.models.role import Role
@@ -18,6 +19,7 @@ __all__ = [
     "RolePermission",
     "UserRole",
     "Organisation",
+    "Plan",
     "OrganisationMember",
     "Invitation",
     "AuditLog",
