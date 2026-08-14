@@ -71,3 +71,15 @@ class BillingRecordNotFound(BusinessOSError):
 
 class BillingRecordAccessDenied(BusinessOSError):
     """Raised when a user is not authorised to access a billing record."""
+
+
+class PlanAlreadyExists(BusinessOSError):
+    """Raised when a plan code already exists."""
+
+
+class PlanNotFound(BusinessOSError):
+    """Raised when the specified plan does not exist."""
+
+
+class PlanAccessDenied(BusinessOSError):
+    """Raised when a user is not authorised to manage plans."""
