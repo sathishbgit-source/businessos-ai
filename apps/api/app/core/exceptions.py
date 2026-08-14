@@ -91,3 +91,17 @@ class InvalidBillingPeriod(BusinessOSError):
 
 class PlanInactive(BusinessOSError):
     """Raised when a billing operation references an inactive plan."""
+class InvalidSubscriptionPeriod(BusinessOSError):
+    """Raised when a subscription period is invalid."""
+
+
+class SubscriptionStateTransitionDenied(BusinessOSError):
+    """Raised when a subscription status transition is not allowed."""
+
+
+class InvalidSubscriptionPeriod(BusinessOSError):
+    """Raised when a subscription period is invalid."""
+
+
+class SubscriptionStateTransitionDenied(BusinessOSError):
+    """Raised when a subscription status transition is not allowed."""

@@ -3,7 +3,12 @@ from uuid import UUID
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.exceptions import OrganisationAccessDenied, PlanNotFound
+from app.core.exceptions import (
+    InvalidSubscriptionPeriod,
+    OrganisationAccessDenied,
+    PlanInactive,
+    PlanNotFound,
+)
 from app.db.enums import MemberStatus, PlanStatus
 from app.db.models.subscription import Subscription
 from app.repositories.organisation_member_repository import (
@@ -43,12 +48,22 @@ class CreateSubscriptionService:
         current_period_start: datetime,
         current_period_end: datetime,
     ) -> Subscription:
-        """Create a subscription after validating access and plan."""
+        """Create a subscription after validating access, plan, and period."""
 
         await self._validate_access(
             organisation_id=organisation_id,
             user_id=user_id,
         )
+
+        if current_period_end <= current_period_start:
+            raise InvalidSubscriptionPeriod(
+                "Subscription period end must be after period start."
+            )
+
+        if current_period_start < start_date:
+            raise InvalidSubscriptionPeriod(
+                "Current period start cannot be before subscription start date."
+            )
 
         plan = await self.plan_repository.get_by_id(plan_id)
 
@@ -58,8 +73,8 @@ class CreateSubscriptionService:
             )
 
         if plan.status != PlanStatus.ACTIVE:
-            raise PlanNotFound(
-                f"Plan with id '{plan_id}' is not available."
+            raise PlanInactive(
+                f"Plan '{plan.code}' is not active."
             )
 
         subscription = Subscription(
