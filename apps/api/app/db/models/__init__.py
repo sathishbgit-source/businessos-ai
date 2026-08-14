@@ -6,10 +6,11 @@ from app.db.models.organisation import Organisation
 from app.db.models.plan import Plan
 from app.db.models.organisation_member import OrganisationMember
 from app.db.models.permission import Permission
+from app.db.models.payment import Payment
 from app.db.models.role import Role
 from app.db.models.role_permission import RolePermission
-from app.db.models.user import User
 from app.db.models.subscription import Subscription
+from app.db.models.user import User
 from app.db.models.user_role import UserRole
 
 __all__ = [
@@ -26,4 +27,5 @@ __all__ = [
     "BillingRecord",
     "Notification",
     "Subscription",
+    "Payment",
 ]
