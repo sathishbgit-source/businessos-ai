@@ -1,0 +1,65 @@
+from uuid import UUID
+
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from app.core.exceptions import BillingRecordAccessDenied
+from app.db.enums import MemberStatus
+from app.db.models.billing_record import BillingRecord
+from app.repositories.billing_repository import BillingRepository
+from app.repositories.organisation_member_repository import (
+    OrganisationMemberRepository,
+)
+
+
+class ListBillingRecordsService:
+    """Service responsible for listing organisation billing records."""
+
+    def __init__(
+        self,
+        db: AsyncSession,
+        billing_repository: BillingRepository,
+        organisation_member_repository: OrganisationMemberRepository,
+    ) -> None:
+        self.db = db
+        self.billing_repository = billing_repository
+        self.organisation_member_repository = (
+            organisation_member_repository
+        )
+
+    async def execute(
+        self,
+        *,
+        organisation_id: UUID,
+        user_id: UUID,
+    ) -> list[BillingRecord]:
+        """Return billing records for an organisation."""
+
+        await self._validate_access(
+            organisation_id=organisation_id,
+            user_id=user_id,
+        )
+
+        return await self.billing_repository.get_all_by_organisation(
+            organisation_id=organisation_id,
+        )
+
+    async def _validate_access(
+        self,
+        *,
+        organisation_id: UUID,
+        user_id: UUID,
+    ) -> None:
+        """Ensure the user is an active organisation member."""
+
+        member = (
+            await self.organisation_member_repository
+            .get_by_organisation_and_user(
+                organisation_id=organisation_id,
+                user_id=user_id,
+            )
+        )
+
+        if member is None or member.status != MemberStatus.ACTIVE:
+            raise BillingRecordAccessDenied(
+                "User is not authorised to access this organisation's billing."
+            )

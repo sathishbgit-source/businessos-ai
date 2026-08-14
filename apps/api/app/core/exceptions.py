@@ -55,3 +55,19 @@ class NotificationNotFound(BusinessOSError):
 
 class NotificationAccessDenied(BusinessOSError):
     """Raised when a user is not authorised to access a notification."""
+
+
+class SubscriptionNotFound(BusinessOSError):
+    """Raised when the specified subscription does not exist."""
+
+
+class SubscriptionAccessDenied(BusinessOSError):
+    """Raised when a user is not authorised to access a subscription."""
+
+
+class BillingRecordNotFound(BusinessOSError):
+    """Raised when the specified billing record does not exist."""
+
+
+class BillingRecordAccessDenied(BusinessOSError):
+    """Raised when a user is not authorised to access a billing record."""
