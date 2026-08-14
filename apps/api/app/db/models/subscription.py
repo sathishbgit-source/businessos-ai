@@ -57,6 +57,10 @@ class Subscription(Base):
     )
 
     plan_id: Mapped[UUID] = mapped_column(
+        ForeignKey(
+            "plans.id",
+            ondelete="RESTRICT",
+        ),
         nullable=False,
     )
 

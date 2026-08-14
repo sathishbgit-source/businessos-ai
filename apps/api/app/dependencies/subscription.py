@@ -5,6 +5,7 @@ from app.db.session import get_db
 from app.repositories.organisation_member_repository import (
     OrganisationMemberRepository,
 )
+from app.repositories.plan_repository import PlanRepository
 from app.repositories.subscription_repository import (
     SubscriptionRepository,
 )
@@ -29,6 +30,7 @@ def get_create_subscription_service(
         db=db,
         subscription_repository=SubscriptionRepository(db),
         organisation_member_repository=OrganisationMemberRepository(db),
+        plan_repository=PlanRepository(db),
     )
 
 

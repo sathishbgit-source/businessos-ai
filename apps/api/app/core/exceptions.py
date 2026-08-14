@@ -83,3 +83,11 @@ class PlanNotFound(BusinessOSError):
 
 class PlanAccessDenied(BusinessOSError):
     """Raised when a user is not authorised to manage plans."""
+
+
+class InvalidBillingPeriod(BusinessOSError):
+    """Raised when the billing period is invalid."""
+
+
+class PlanInactive(BusinessOSError):
+    """Raised when a billing operation references an inactive plan."""

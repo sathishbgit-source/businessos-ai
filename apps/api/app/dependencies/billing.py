@@ -6,6 +6,8 @@ from app.repositories.billing_repository import BillingRepository
 from app.repositories.organisation_member_repository import (
     OrganisationMemberRepository,
 )
+from app.repositories.plan_repository import PlanRepository
+from app.repositories.subscription_repository import SubscriptionRepository
 from app.services.billing.create_billing_record import (
     CreateBillingRecordService,
 )
@@ -27,6 +29,8 @@ def get_create_billing_record_service(
         db=db,
         billing_repository=BillingRepository(db),
         organisation_member_repository=OrganisationMemberRepository(db),
+        subscription_repository=SubscriptionRepository(db),
+        plan_repository=PlanRepository(db),
     )
 
 

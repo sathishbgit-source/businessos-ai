@@ -3,12 +3,13 @@ from uuid import UUID
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.exceptions import OrganisationAccessDenied
-from app.db.enums import MemberStatus
+from app.core.exceptions import OrganisationAccessDenied, PlanNotFound
+from app.db.enums import MemberStatus, PlanStatus
 from app.db.models.subscription import Subscription
 from app.repositories.organisation_member_repository import (
     OrganisationMemberRepository,
 )
+from app.repositories.plan_repository import PlanRepository
 from app.repositories.subscription_repository import (
     SubscriptionRepository,
 )
@@ -22,12 +23,14 @@ class CreateSubscriptionService:
         db: AsyncSession,
         subscription_repository: SubscriptionRepository,
         organisation_member_repository: OrganisationMemberRepository,
+        plan_repository: PlanRepository,
     ) -> None:
         self.db = db
         self.subscription_repository = subscription_repository
         self.organisation_member_repository = (
             organisation_member_repository
         )
+        self.plan_repository = plan_repository
 
     async def execute(
         self,
@@ -40,12 +43,24 @@ class CreateSubscriptionService:
         current_period_start: datetime,
         current_period_end: datetime,
     ) -> Subscription:
-        """Create a subscription after validating organisation access."""
+        """Create a subscription after validating access and plan."""
 
         await self._validate_access(
             organisation_id=organisation_id,
             user_id=user_id,
         )
+
+        plan = await self.plan_repository.get_by_id(plan_id)
+
+        if plan is None:
+            raise PlanNotFound(
+                f"Plan with id '{plan_id}' does not exist."
+            )
+
+        if plan.status != PlanStatus.ACTIVE:
+            raise PlanNotFound(
+                f"Plan with id '{plan_id}' is not available."
+            )
 
         subscription = Subscription(
             organisation_id=organisation_id,

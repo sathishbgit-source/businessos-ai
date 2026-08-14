@@ -11,12 +11,8 @@ class BillingRecordCreate(BaseModel):
     """Request schema for creating a billing record."""
 
     subscription_id: UUID
-    customer_id: UUID
-    plan_id: UUID
     billing_period_start: datetime
     billing_period_end: datetime
-    amount: Decimal
-    currency: str
 
 
 class BillingRecordUpdate(BaseModel):

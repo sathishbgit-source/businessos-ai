@@ -54,12 +54,8 @@ async def create_billing_record(
         organisation_id=organisation_id,
         user_id=current_user.id,
         subscription_id=request.subscription_id,
-        customer_id=request.customer_id,
-        plan_id=request.plan_id,
         billing_period_start=request.billing_period_start,
         billing_period_end=request.billing_period_end,
-        amount=request.amount,
-        currency=request.currency,
     )
 
     return BillingRecordResponse.model_validate(billing_record)
