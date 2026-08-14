@@ -33,6 +33,7 @@ class GetBillingRecordService:
         self,
         *,
         billing_record_id: UUID,
+        organisation_id: UUID,
         user_id: UUID,
     ) -> BillingRecord:
         """Return a billing record after validating organisation access."""
@@ -46,8 +47,13 @@ class GetBillingRecordService:
                 f"Billing record with id '{billing_record_id}' does not exist."
             )
 
+        if billing_record.organisation_id != organisation_id:
+            raise BillingRecordAccessDenied(
+                "Billing record does not belong to this organisation."
+            )
+
         await self._validate_access(
-            organisation_id=billing_record.organisation_id,
+            organisation_id=organisation_id,
             user_id=user_id,
         )
 
