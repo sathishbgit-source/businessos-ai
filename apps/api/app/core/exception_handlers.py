@@ -11,6 +11,16 @@ from app.core.exceptions import (
     InvitationExpired,
     InvitationNotFound,
     InvitationRevoked,
+    InvalidBillingPeriod,
+    InvalidSubscriptionPeriod,
+    BillingRecordAccessDenied,
+    BillingRecordNotFound,
+    PlanAccessDenied,
+    PlanInactive,
+    PlanNotFound,
+    SubscriptionAccessDenied,
+    SubscriptionNotFound,
+    SubscriptionStateTransitionDenied,
     NotificationAccessDenied,
     NotificationNotFound,
     OrganisationAccessDenied,
@@ -38,6 +48,19 @@ BUSINESS_EXCEPTION_STATUS_CODES = {
     InvitationAlreadyAccepted: status.HTTP_409_CONFLICT,
     NotificationNotFound: status.HTTP_404_NOT_FOUND,
     NotificationAccessDenied: status.HTTP_403_FORBIDDEN,
+
+    SubscriptionNotFound: status.HTTP_404_NOT_FOUND,
+    SubscriptionAccessDenied: status.HTTP_403_FORBIDDEN,
+    InvalidSubscriptionPeriod: status.HTTP_400_BAD_REQUEST,
+    SubscriptionStateTransitionDenied: status.HTTP_409_CONFLICT,
+
+    BillingRecordNotFound: status.HTTP_404_NOT_FOUND,
+    BillingRecordAccessDenied: status.HTTP_403_FORBIDDEN,
+    InvalidBillingPeriod: status.HTTP_400_BAD_REQUEST,
+
+    PlanNotFound: status.HTTP_404_NOT_FOUND,
+    PlanAccessDenied: status.HTTP_403_FORBIDDEN,
+    PlanInactive: status.HTTP_409_CONFLICT,
 }
 
 
@@ -55,6 +78,19 @@ BUSINESS_EXCEPTION_CODES = {
     InvitationAlreadyAccepted: "INVITATION_ALREADY_ACCEPTED",
     NotificationNotFound: "NOTIFICATION_NOT_FOUND",
     NotificationAccessDenied: "NOTIFICATION_ACCESS_DENIED",
+
+    SubscriptionNotFound: "SUBSCRIPTION_NOT_FOUND",
+    SubscriptionAccessDenied: "SUBSCRIPTION_ACCESS_DENIED",
+    InvalidSubscriptionPeriod: "INVALID_SUBSCRIPTION_PERIOD",
+    SubscriptionStateTransitionDenied: "SUBSCRIPTION_STATE_TRANSITION_DENIED",
+
+    BillingRecordNotFound: "BILLING_RECORD_NOT_FOUND",
+    BillingRecordAccessDenied: "BILLING_RECORD_ACCESS_DENIED",
+    InvalidBillingPeriod: "INVALID_BILLING_PERIOD",
+
+    PlanNotFound: "PLAN_NOT_FOUND",
+    PlanAccessDenied: "PLAN_ACCESS_DENIED",
+    PlanInactive: "PLAN_INACTIVE",
 }
 
 
