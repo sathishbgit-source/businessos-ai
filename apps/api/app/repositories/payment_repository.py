@@ -78,11 +78,13 @@ class PaymentRepository:
 
     async def get_by_provider_payment_id(
         self,
+        provider: str,
         provider_payment_id: str,
     ) -> Payment | None:
         result = await self.db.execute(
             select(Payment).where(
-                Payment.provider_payment_id == provider_payment_id
+                Payment.provider == provider,
+                Payment.provider_payment_id == provider_payment_id,
             )
         )
         return result.scalar_one_or_none()

@@ -22,7 +22,9 @@ from app.core.exceptions import (
     OrganisationMemberAlreadyExists,
     OrganisationNotFound,
     PaymentAccessDenied,
+    PaymentCustomerMismatch,
     PaymentNotFound,
+    PaymentProviderReferenceAlreadyExists,
     PlanAccessDenied,
     PlanInactive,
     PlanNotFound,
@@ -64,6 +66,8 @@ BUSINESS_EXCEPTION_STATUS_CODES = {
 
     PaymentNotFound: status.HTTP_404_NOT_FOUND,
     PaymentAccessDenied: status.HTTP_403_FORBIDDEN,
+    PaymentCustomerMismatch: status.HTTP_400_BAD_REQUEST,
+    PaymentProviderReferenceAlreadyExists: status.HTTP_409_CONFLICT,
 
     PlanNotFound: status.HTTP_404_NOT_FOUND,
     PlanAccessDenied: status.HTTP_403_FORBIDDEN,
@@ -99,6 +103,10 @@ BUSINESS_EXCEPTION_CODES = {
 
     PaymentNotFound: "PAYMENT_NOT_FOUND",
     PaymentAccessDenied: "PAYMENT_ACCESS_DENIED",
+    PaymentCustomerMismatch: "PAYMENT_CUSTOMER_MISMATCH",
+    PaymentProviderReferenceAlreadyExists: (
+        "PAYMENT_PROVIDER_REFERENCE_ALREADY_EXISTS"
+    ),
 
     PlanNotFound: "PLAN_NOT_FOUND",
     PlanAccessDenied: "PLAN_ACCESS_DENIED",

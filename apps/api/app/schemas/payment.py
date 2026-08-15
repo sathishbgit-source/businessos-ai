@@ -2,7 +2,7 @@ from datetime import datetime
 from decimal import Decimal
 from uuid import UUID
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 
 from app.db.enums import PaymentStatus
 
@@ -13,9 +13,16 @@ class PaymentCreate(BaseModel):
     billing_record_id: UUID
     subscription_id: UUID
     customer_id: UUID
-    amount: Decimal
-    currency: str
-    provider: str
+    amount: Decimal = Field(gt=0)
+    currency: str = Field(
+        min_length=3,
+        max_length=3,
+        pattern=r"^[A-Za-z]{3}$",
+    )
+    provider: str = Field(
+        min_length=1,
+        max_length=50,
+    )
     provider_payment_id: str | None = None
 
 

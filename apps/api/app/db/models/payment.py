@@ -1,13 +1,13 @@
 from datetime import datetime
 from decimal import Decimal
-from uuid import UUID
-from uuid import uuid4
+from uuid import UUID, uuid4
 
 from sqlalchemy import DateTime
 from sqlalchemy import ForeignKey
 from sqlalchemy import Index
 from sqlalchemy import Numeric
 from sqlalchemy import String
+from sqlalchemy import UniqueConstraint
 from sqlalchemy.orm import Mapped
 from sqlalchemy.orm import mapped_column
 
@@ -42,6 +42,11 @@ class Payment(Base):
         Index(
             "ix_payments_provider_payment_id",
             "provider_payment_id",
+        ),
+        UniqueConstraint(
+            "provider",
+            "provider_payment_id",
+            name="uq_payments_provider_provider_payment_id",
         ),
     )
 
