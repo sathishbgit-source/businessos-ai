@@ -67,12 +67,18 @@ class SubscriptionAccessDenied(BusinessOSError):
 
 class PaymentNotFound(BusinessOSError):
     """Raised when a payment cannot be found."""
-    pass
 
 
 class PaymentAccessDenied(BusinessOSError):
     """Raised when a user cannot access a payment."""
-    pass
+
+
+class PaymentCustomerMismatch(BusinessOSError):
+    """Raised when a payment customer does not match the subscription customer."""
+
+
+class PaymentProviderReferenceAlreadyExists(BusinessOSError):
+    """Raised when a provider payment reference is already in use."""
 
 
 class BillingRecordNotFound(BusinessOSError):
@@ -101,8 +107,10 @@ class InvalidBillingPeriod(BusinessOSError):
 
 class PlanInactive(BusinessOSError):
     """Raised when a billing operation references an inactive plan."""
+
+
 class InvalidSubscriptionPeriod(BusinessOSError):
-    """Raised when a subscription period is invalid."""
+    """Raised when the billing period is invalid."""
 
 
 class SubscriptionStateTransitionDenied(BusinessOSError):

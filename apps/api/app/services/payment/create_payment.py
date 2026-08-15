@@ -6,6 +6,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.exceptions import (
     BillingRecordNotFound,
     OrganisationAccessDenied,
+    PaymentCustomerMismatch,
+    PaymentProviderReferenceAlreadyExists,
     SubscriptionNotFound,
 )
 from app.db.enums import MemberStatus, PaymentStatus
@@ -88,9 +90,22 @@ class CreatePaymentService:
             )
 
         if subscription.customer_id != customer_id:
-            raise ValueError(
+            raise PaymentCustomerMismatch(
                 "Payment customer does not match the subscription customer."
             )
+
+        if provider_payment_id is not None:
+            existing_payment = (
+                await self.payment_repository.get_by_provider_payment_id(
+                    provider=provider,
+                    provider_payment_id=provider_payment_id,
+                )
+            )
+
+            if existing_payment is not None:
+                raise PaymentProviderReferenceAlreadyExists(
+                    "A payment already exists for this provider payment reference."
+                )
 
         payment = Payment(
             organisation_id=organisation_id,

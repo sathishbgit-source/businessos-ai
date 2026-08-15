@@ -7,7 +7,12 @@ import pytest
 from fastapi.testclient import TestClient
 
 from app.api.v1.router import router as api_v1_router
-from app.core.exceptions import PaymentAccessDenied, PaymentNotFound
+from app.core.exceptions import (
+    PaymentAccessDenied,
+    PaymentCustomerMismatch,
+    PaymentNotFound,
+    PaymentProviderReferenceAlreadyExists,
+)
 from app.db.enums import PaymentStatus
 from app.db.models.payment import Payment
 from app.db.models.user import User
@@ -407,3 +412,206 @@ def test_create_payment_validates_request(
 
     assert data["success"] is False
     assert data["error"]["code"] == "VALIDATION_ERROR"
+
+
+def test_create_payment_rejects_non_positive_amount(
+    client,
+    organisation_id,
+):
+    payload = {
+        "billing_record_id": str(uuid4()),
+        "subscription_id": str(uuid4()),
+        "customer_id": str(uuid4()),
+        "amount": "0.00",
+        "currency": "AUD",
+        "provider": "test",
+    }
+
+    response = client.post(
+        f"/api/v1/organisations/{organisation_id}/payments",
+        json=payload,
+    )
+
+    assert response.status_code == 422
+
+    data = response.json()
+
+    assert data["success"] is False
+    assert data["error"]["code"] == "VALIDATION_ERROR"
+
+
+def test_create_payment_rejects_negative_amount(
+    client,
+    organisation_id,
+):
+    payload = {
+        "billing_record_id": str(uuid4()),
+        "subscription_id": str(uuid4()),
+        "customer_id": str(uuid4()),
+        "amount": "-1.00",
+        "currency": "AUD",
+        "provider": "test",
+    }
+
+    response = client.post(
+        f"/api/v1/organisations/{organisation_id}/payments",
+        json=payload,
+    )
+
+    assert response.status_code == 422
+
+    data = response.json()
+
+    assert data["success"] is False
+    assert data["error"]["code"] == "VALIDATION_ERROR"
+
+
+@pytest.mark.parametrize(
+    "currency",
+    [
+        "AU",
+        "AUDD",
+        "12$",
+    ],
+)
+def test_create_payment_rejects_invalid_currency(
+    client,
+    organisation_id,
+    currency,
+):
+    payload = {
+        "billing_record_id": str(uuid4()),
+        "subscription_id": str(uuid4()),
+        "customer_id": str(uuid4()),
+        "amount": "99.00",
+        "currency": currency,
+        "provider": "test",
+    }
+
+    response = client.post(
+        f"/api/v1/organisations/{organisation_id}/payments",
+        json=payload,
+    )
+
+    assert response.status_code == 422
+
+    data = response.json()
+
+    assert data["success"] is False
+    assert data["error"]["code"] == "VALIDATION_ERROR"
+
+
+def test_create_payment_rejects_empty_provider(
+    client,
+    organisation_id,
+):
+    payload = {
+        "billing_record_id": str(uuid4()),
+        "subscription_id": str(uuid4()),
+        "customer_id": str(uuid4()),
+        "amount": "99.00",
+        "currency": "AUD",
+        "provider": "",
+    }
+
+    response = client.post(
+        f"/api/v1/organisations/{organisation_id}/payments",
+        json=payload,
+    )
+
+    assert response.status_code == 422
+
+    data = response.json()
+
+    assert data["success"] is False
+    assert data["error"]["code"] == "VALIDATION_ERROR"
+
+
+def test_create_payment_returns_400_for_customer_mismatch(
+    client,
+    organisation_id,
+):
+    service = AsyncMock()
+    service.execute.side_effect = PaymentCustomerMismatch(
+        "Payment customer does not match the subscription customer.",
+    )
+
+    async def override_service():
+        return service
+
+    app.dependency_overrides[
+        get_create_payment_service
+    ] = override_service
+
+    payload = {
+        "billing_record_id": str(uuid4()),
+        "subscription_id": str(uuid4()),
+        "customer_id": str(uuid4()),
+        "amount": "99.00",
+        "currency": "AUD",
+        "provider": "test",
+    }
+
+    response = client.post(
+        f"/api/v1/organisations/{organisation_id}/payments",
+        json=payload,
+    )
+
+    assert response.status_code == 400
+
+    data = response.json()
+
+    assert data["success"] is False
+    assert data["error"]["code"] == "PAYMENT_CUSTOMER_MISMATCH"
+
+    app.dependency_overrides.pop(
+        get_create_payment_service,
+        None,
+    )
+
+
+def test_create_payment_returns_409_for_duplicate_provider_reference(
+    client,
+    organisation_id,
+):
+    service = AsyncMock()
+    service.execute.side_effect = PaymentProviderReferenceAlreadyExists(
+        "A payment already exists for this provider payment reference.",
+    )
+
+    async def override_service():
+        return service
+
+    app.dependency_overrides[
+        get_create_payment_service
+    ] = override_service
+
+    payload = {
+        "billing_record_id": str(uuid4()),
+        "subscription_id": str(uuid4()),
+        "customer_id": str(uuid4()),
+        "amount": "99.00",
+        "currency": "AUD",
+        "provider": "stripe",
+        "provider_payment_id": "pi_123",
+    }
+
+    response = client.post(
+        f"/api/v1/organisations/{organisation_id}/payments",
+        json=payload,
+    )
+
+    assert response.status_code == 409
+
+    data = response.json()
+
+    assert data["success"] is False
+    assert (
+        data["error"]["code"]
+        == "PAYMENT_PROVIDER_REFERENCE_ALREADY_EXISTS"
+    )
+
+    app.dependency_overrides.pop(
+        get_create_payment_service,
+        None,
+    )

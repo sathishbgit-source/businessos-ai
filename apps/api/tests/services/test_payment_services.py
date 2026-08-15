@@ -5,14 +5,18 @@ from uuid import uuid4
 import pytest
 
 from app.core.exceptions import (
+    BillingRecordNotFound,
     OrganisationAccessDenied,
     PaymentAccessDenied,
+    PaymentCustomerMismatch,
     PaymentNotFound,
+    PaymentProviderReferenceAlreadyExists,
+    SubscriptionNotFound,
 )
 from app.db.enums import MemberStatus, PaymentStatus
 from app.db.models.payment import Payment
-from app.services.payment.get_payment import GetPaymentService
 from app.services.payment.create_payment import CreatePaymentService
+from app.services.payment.get_payment import GetPaymentService
 from app.services.payment.list_payments import ListPaymentsService
 from app.services.payment.update_payment import UpdatePaymentService
 
@@ -172,9 +176,7 @@ async def test_list_payments_denies_inactive_member(payment):
     repository = AsyncMock()
 
     organisation_repository = AsyncMock()
-    member = AsyncMock()
-    member.status = MemberStatus.INACTIVE
-    organisation_repository.get_by_organisation_and_user.return_value = member
+    organisation_repository.get_by_organisation_and_user.return_value = None
 
     service = ListPaymentsService(
         db=AsyncMock(),
@@ -248,6 +250,7 @@ async def test_update_payment_raises_when_not_found():
 async def test_create_payment_success(payment, active_member):
     payment_repository = AsyncMock()
     payment_repository.create.return_value = payment
+    payment_repository.get_by_provider_payment_id.return_value = None
 
     billing_repository = AsyncMock()
     billing_record = AsyncMock()
@@ -266,8 +269,6 @@ async def test_create_payment_success(payment, active_member):
     )
 
     db = AsyncMock()
-
-    from app.services.payment.create_payment import CreatePaymentService
 
     service = CreatePaymentService(
         db=db,
@@ -294,7 +295,70 @@ async def test_create_payment_success(payment, active_member):
 
 
 @pytest.mark.asyncio
-async def test_create_payment_rejects_missing_billing_record(payment, active_member):
+async def test_create_payment_rejects_duplicate_provider_reference(
+    payment,
+    active_member,
+):
+    provider_payment_id = "provider-payment-123"
+
+    payment_repository = AsyncMock()
+    payment_repository.get_by_provider_payment_id.return_value = payment
+
+    billing_repository = AsyncMock()
+    billing_record = AsyncMock()
+    billing_record.organisation_id = payment.organisation_id
+    billing_repository.get_by_id.return_value = billing_record
+
+    subscription_repository = AsyncMock()
+    subscription = AsyncMock()
+    subscription.organisation_id = payment.organisation_id
+    subscription.customer_id = payment.customer_id
+    subscription_repository.get_by_id.return_value = subscription
+
+    organisation_repository = AsyncMock()
+    organisation_repository.get_by_organisation_and_user.return_value = (
+        active_member
+    )
+
+    db = AsyncMock()
+
+    service = CreatePaymentService(
+        db=db,
+        payment_repository=payment_repository,
+        organisation_member_repository=organisation_repository,
+        billing_repository=billing_repository,
+        subscription_repository=subscription_repository,
+    )
+
+    with pytest.raises(
+        PaymentProviderReferenceAlreadyExists,
+        match="provider payment reference",
+    ):
+        await service.execute(
+            organisation_id=payment.organisation_id,
+            user_id=uuid4(),
+            billing_record_id=payment.billing_record_id,
+            subscription_id=payment.subscription_id,
+            customer_id=payment.customer_id,
+            amount=Decimal("99.00"),
+            currency="AUD",
+            provider="test",
+            provider_payment_id=provider_payment_id,
+        )
+
+    payment_repository.get_by_provider_payment_id.assert_awaited_once_with(
+        provider="test",
+        provider_payment_id=provider_payment_id,
+    )
+    payment_repository.create.assert_not_awaited()
+    db.commit.assert_not_awaited()
+
+
+@pytest.mark.asyncio
+async def test_create_payment_rejects_missing_billing_record(
+    payment,
+    active_member,
+):
     payment_repository = AsyncMock()
 
     billing_repository = AsyncMock()
@@ -312,8 +376,6 @@ async def test_create_payment_rejects_missing_billing_record(payment, active_mem
         billing_repository=billing_repository,
         subscription_repository=AsyncMock(),
     )
-
-    from app.core.exceptions import BillingRecordNotFound
 
     with pytest.raises(BillingRecordNotFound):
         await service.execute(
@@ -394,8 +456,6 @@ async def test_create_payment_rejects_missing_subscription(
         subscription_repository=subscription_repository,
     )
 
-    from app.core.exceptions import SubscriptionNotFound
-
     with pytest.raises(SubscriptionNotFound):
         await service.execute(
             organisation_id=payment.organisation_id,
@@ -440,7 +500,10 @@ async def test_create_payment_rejects_customer_mismatch(
         subscription_repository=subscription_repository,
     )
 
-    with pytest.raises(ValueError, match="customer"):
+    with pytest.raises(
+        PaymentCustomerMismatch,
+        match="customer",
+    ):
         await service.execute(
             organisation_id=payment.organisation_id,
             user_id=uuid4(),
