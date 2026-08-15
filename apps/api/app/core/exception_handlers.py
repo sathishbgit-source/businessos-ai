@@ -5,6 +5,8 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 
 from app.core.exceptions import (
+    BillingRecordAccessDenied,
+    BillingRecordNotFound,
     BusinessOSError,
     InvitationAlreadyAccepted,
     InvitationAlreadyExists,
@@ -13,21 +15,21 @@ from app.core.exceptions import (
     InvitationRevoked,
     InvalidBillingPeriod,
     InvalidSubscriptionPeriod,
-    BillingRecordAccessDenied,
-    BillingRecordNotFound,
-    PlanAccessDenied,
-    PlanInactive,
-    PlanNotFound,
-    SubscriptionAccessDenied,
-    SubscriptionNotFound,
-    SubscriptionStateTransitionDenied,
     NotificationAccessDenied,
     NotificationNotFound,
     OrganisationAccessDenied,
     OrganisationAlreadyExists,
     OrganisationMemberAlreadyExists,
     OrganisationNotFound,
+    PaymentAccessDenied,
+    PaymentNotFound,
+    PlanAccessDenied,
+    PlanInactive,
+    PlanNotFound,
     RoleNotFound,
+    SubscriptionAccessDenied,
+    SubscriptionNotFound,
+    SubscriptionStateTransitionDenied,
     UserNotFound,
 )
 
@@ -41,11 +43,13 @@ BUSINESS_EXCEPTION_STATUS_CODES = {
     OrganisationMemberAlreadyExists: status.HTTP_409_CONFLICT,
     UserNotFound: status.HTTP_404_NOT_FOUND,
     RoleNotFound: status.HTTP_404_NOT_FOUND,
+
     InvitationAlreadyExists: status.HTTP_409_CONFLICT,
     InvitationNotFound: status.HTTP_404_NOT_FOUND,
     InvitationExpired: status.HTTP_410_GONE,
     InvitationRevoked: status.HTTP_410_GONE,
     InvitationAlreadyAccepted: status.HTTP_409_CONFLICT,
+
     NotificationNotFound: status.HTTP_404_NOT_FOUND,
     NotificationAccessDenied: status.HTTP_403_FORBIDDEN,
 
@@ -57,6 +61,9 @@ BUSINESS_EXCEPTION_STATUS_CODES = {
     BillingRecordNotFound: status.HTTP_404_NOT_FOUND,
     BillingRecordAccessDenied: status.HTTP_403_FORBIDDEN,
     InvalidBillingPeriod: status.HTTP_400_BAD_REQUEST,
+
+    PaymentNotFound: status.HTTP_404_NOT_FOUND,
+    PaymentAccessDenied: status.HTTP_403_FORBIDDEN,
 
     PlanNotFound: status.HTTP_404_NOT_FOUND,
     PlanAccessDenied: status.HTTP_403_FORBIDDEN,
@@ -71,11 +78,13 @@ BUSINESS_EXCEPTION_CODES = {
     OrganisationMemberAlreadyExists: "ORGANISATION_MEMBER_ALREADY_EXISTS",
     UserNotFound: "USER_NOT_FOUND",
     RoleNotFound: "ROLE_NOT_FOUND",
+
     InvitationAlreadyExists: "INVITATION_ALREADY_EXISTS",
     InvitationNotFound: "INVITATION_NOT_FOUND",
     InvitationExpired: "INVITATION_EXPIRED",
     InvitationRevoked: "INVITATION_REVOKED",
     InvitationAlreadyAccepted: "INVITATION_ALREADY_ACCEPTED",
+
     NotificationNotFound: "NOTIFICATION_NOT_FOUND",
     NotificationAccessDenied: "NOTIFICATION_ACCESS_DENIED",
 
@@ -87,6 +96,9 @@ BUSINESS_EXCEPTION_CODES = {
     BillingRecordNotFound: "BILLING_RECORD_NOT_FOUND",
     BillingRecordAccessDenied: "BILLING_RECORD_ACCESS_DENIED",
     InvalidBillingPeriod: "INVALID_BILLING_PERIOD",
+
+    PaymentNotFound: "PAYMENT_NOT_FOUND",
+    PaymentAccessDenied: "PAYMENT_ACCESS_DENIED",
 
     PlanNotFound: "PLAN_NOT_FOUND",
     PlanAccessDenied: "PLAN_ACCESS_DENIED",

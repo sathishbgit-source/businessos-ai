@@ -30,6 +30,7 @@ def test_openapi_tags():
         "Organisations",
         "Invitations",
         "Notifications",
+        "Payments",
     }
 
 
@@ -45,6 +46,14 @@ def test_openapi_contains_api_routes():
     assert "/api/v1/organisations" in paths
     assert "/api/v1/invitations/accept" in paths
     assert "/api/v1/notifications" in paths
+    assert (
+        "/api/v1/organisations/{organisation_id}/payments"
+        in paths
+    )
+    assert (
+        "/api/v1/organisations/{organisation_id}/payments/{payment_id}"
+        in paths
+    )
 
 
 def test_openapi_documents_rate_limiting():
