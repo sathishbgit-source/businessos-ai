@@ -301,7 +301,7 @@ No Stripe/Razorpay/provider-specific business logic exists in PR-037.
 The payment domain remains provider-independent.
 
 7. Payment Application Layer
-PR-038 — Payment Repository + Service Layer
+PR-038 — Payment API Layer
 
 Status: NEXT
 
@@ -1255,7 +1255,7 @@ A PR is not considered complete merely because the code was written.
 
 The next engineering task is:
 
-PR-038 — Payment Repository + Service Layer
+PR-038 — Payment API Layer
 
 Do not begin Stripe or Razorpay integration before PR-038, PR-039, PR-040, and PR-041 are complete.
 
@@ -1491,7 +1491,7 @@ PR-035  Subscription Lifecycle                       ✅
 PR-036  Business Exception Handling                  ✅
 
 PR-037  Payment Repository + Service Layer          ✅
-PR-038  Payment Repository + Service Layer            → NEXT
+PR-038  Payment API Layer                             → NEXT
 PR-039  Payment API            ⬜
 PR-040  Payment State Machine                        ⬜
 PR-041  Payment Provider Abstraction                 ⬜

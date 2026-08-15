@@ -34,6 +34,12 @@ openapi_tags = [
             "Authenticated user notification endpoints."
         ),
     },
+    {
+        "name": "Payments",
+        "description": (
+            "Payment creation, retrieval, listing, and management endpoints."
+        ),
+    },
 ]
 
 
