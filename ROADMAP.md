@@ -347,30 +347,25 @@ Service tests
 Access-control tests
 Validation tests
 Error tests
-8. Payment API
-PR-039 — Payment API Layer
+8. Payment API Hardening & Integration
+PR-039 — Payment API Hardening & Integration
 
-Status: PLANNED
+Status: NEXT
 
-Expose provider-independent payment APIs.
-
-POST   /organisations/{organisation_id}/payments
-
-GET    /organisations/{organisation_id}/payments
-
-GET    /organisations/{organisation_id}/payments/{payment_id}
-
-PATCH  /organisations/{organisation_id}/payments/{payment_id}
+Harden and integration-verify the provider-independent
+Payment API introduced in PR-038.
 
 Implement:
 
-Request schas
-Response schemas
-API dependencies
-API validation
-OpenAPI documentation
-API tests
-Error handling
+API integration tests
+Persistence verification
+Organisation access-control verification
+Billing record consistency verification
+Subscription consistency verification
+Customer consistency verification
+Error contract verification
+Transaction behavior verification
+API regression coverage
 9. Payment State Machine
 PR-040 — Payment Lifecycle & State Machine
 
@@ -1094,7 +1089,8 @@ PR-034            Subscription + Billing Hardening      ✅
 PR-035            Subscription Lifecycle                ✅
 PR-036            Business Exception Handling           ✅
 PR-037            Payment Repository + Service Layer      ✅ COMPLETE
-PR-039            Payment API Layer
+PR-038            Payment API Layer                        ✅ COMPLETE
+PR-039            Payment API Hardening & Integration      → NEXT
 PR-040            Payment Lifecycle / State Machine
 PR-041            Payment Provider Abstraction
 PR-042            Razorpay Adapter
@@ -1255,17 +1251,17 @@ A PR is not considered complete merely because the code was written.
 
 The next engineering task is:
 
-PR-038 — Payment API Layer
+PR-039 — Payment API Hardening & Integration
 
-Do not begin Stripe or Razorpay integration before PR-038, PR-039, PR-040, and PR-041 are complete.
+Do not begin Stripe or Razorpay integration before PR-039, PR-040, and PR-041 are complete.
 
 The sequence is:
 
 PR-038
-Payment Repository + Service
+Payment API
         ↓
 PR-039
-Payment API
+Payment API Hardening + Integration
         ↓
 PR-040
 Payment State Machine
@@ -1491,8 +1487,8 @@ PR-035  Subscription Lifecycle                       ✅
 PR-036  Business Exception Handling                  ✅
 
 PR-037  Payment Repository + Service Layer          ✅
-PR-038  Payment API Layer                             → NEXT
-PR-039  Payment API            ⬜
+PR-038  Payment API Layer                           ✅
+PR-039  Payment API Hardening & Integration         → NEXT
 PR-040  Payment State Machine                        ⬜
 PR-041  Payment Provider Abstraction                 ⬜
 PR-042  Razorpay Adapter                             ⬜
