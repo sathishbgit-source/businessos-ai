@@ -65,6 +65,16 @@ class SubscriptionAccessDenied(BusinessOSError):
     """Raised when a user is not authorised to access a subscription."""
 
 
+class PaymentNotFound(BusinessOSError):
+    """Raised when a payment cannot be found."""
+    pass
+
+
+class PaymentAccessDenied(BusinessOSError):
+    """Raised when a user cannot access a payment."""
+    pass
+
+
 class BillingRecordNotFound(BusinessOSError):
     """Raised when the specified billing record does not exist."""
 
