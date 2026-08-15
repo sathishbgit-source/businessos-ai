@@ -243,7 +243,7 @@ Consistent API error responses
 Business exceptions now provide a consistent application-level error contract.
 
 6. Payment Domain
-PR-037 — Payment Domain Foundation
+PR-037 — Payment Repository + Service Layer
 
 Status: COMPLETmplemented the provider-independent payment domain foundation.
 
@@ -1093,7 +1093,7 @@ PR-033            Subscription Plans                    ✅
 PR-034            Subscription + Billing Hardening      ✅
 PR-035            Subscription Lifecycle                ✅
 PR-036            Business Exception Handling           ✅
-PR-037            Payment Domain Foundation              Payment Repository + Service Layer    ← NEXT
+PR-037            Payment Repository + Service Layer      ✅ COMPLETE
 PR-039            Payment API Layer
 PR-040            Payment Lifecycle / State Machine
 PR-041            Payment Provider Abstraction
@@ -1490,7 +1490,7 @@ PR-034  Subscription + Billing Hardening             ✅
 PR-035  Subscription Lifecycle                       ✅
 PR-036  Business Exception Handling                  ✅
 
-PR-037  Payment Domain Foundation                    ✅
+PR-037  Payment Repository + Service Layer          ✅
 PR-038  Payment Repository + Service Layer            → NEXT
 PR-039  Payment API            ⬜
 PR-040  Payment State Machine                        ⬜
