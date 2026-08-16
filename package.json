@@ -16,6 +16,6 @@
       "lint": "echo \"Linting will be configured in PR-003\"",
       "test": "echo \"Testing will be configured in PR-003\"",
       "format": "echo \"Formatting will be configured in PR-003\"",
-      "dev": "echo \"Development environment will be configured in PR-004\""
+      "dev": "npm run dev --workspace=web"
     }
-  }
+}
