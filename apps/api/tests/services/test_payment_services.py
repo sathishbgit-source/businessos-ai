@@ -11,6 +11,7 @@ from app.core.exceptions import (
     PaymentCustomerMismatch,
     PaymentNotFound,
     PaymentProviderReferenceAlreadyExists,
+    PaymentStateTransitionDenied,
     SubscriptionNotFound,
 )
 from app.db.enums import MemberStatus, PaymentStatus
@@ -214,14 +215,118 @@ async def test_update_payment_status(payment, active_member):
         payment_id=payment.id,
         organisation_id=payment.organisation_id,
         user_id=uuid4(),
-        status=PaymentStatus.SUCCEEDED,
+        status=PaymentStatus.PROCESSING,
     )
 
     assert result is payment
-    assert payment.status == PaymentStatus.SUCCEEDED
+    assert payment.status == PaymentStatus.PROCESSING
 
     repository.update.assert_awaited_once_with(payment)
     db.commit.assert_awaited_once()
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    ("current_status", "requested_status"),
+    [
+        (PaymentStatus.PENDING, PaymentStatus.CANCELLED),
+        (PaymentStatus.PROCESSING, PaymentStatus.SUCCEEDED),
+        (PaymentStatus.PROCESSING, PaymentStatus.FAILED),
+        (PaymentStatus.SUCCEEDED, PaymentStatus.REFUNDED),
+    ],
+)
+async def test_update_payment_allows_valid_status_transitions(
+    payment,
+    active_member,
+    current_status,
+    requested_status,
+):
+    payment.status = current_status
+
+    repository = AsyncMock()
+    repository.get_by_id.return_value = payment
+    repository.update.return_value = payment
+
+    db = AsyncMock()
+
+    organisation_repository = AsyncMock()
+    organisation_repository.get_by_organisation_and_user.return_value = (
+        active_member
+    )
+
+    service = UpdatePaymentService(
+        db=db,
+        payment_repository=repository,
+        organisation_member_repository=organisation_repository,
+    )
+
+    result = await service.execute(
+        payment_id=payment.id,
+        organisation_id=payment.organisation_id,
+        user_id=uuid4(),
+        status=requested_status,
+    )
+
+    assert result is payment
+    assert payment.status == requested_status
+
+    repository.update.assert_awaited_once_with(payment)
+    db.commit.assert_awaited_once()
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    ("current_status", "requested_status"),
+    [
+        (PaymentStatus.PENDING, PaymentStatus.SUCCEEDED),
+        (PaymentStatus.PENDING, PaymentStatus.FAILED),
+        (PaymentStatus.PENDING, PaymentStatus.REFUNDED),
+        (PaymentStatus.PROCESSING, PaymentStatus.CANCELLED),
+        (PaymentStatus.SUCCEEDED, PaymentStatus.PENDING),
+        (PaymentStatus.SUCCEEDED, PaymentStatus.FAILED),
+        (PaymentStatus.FAILED, PaymentStatus.SUCCEEDED),
+        (PaymentStatus.CANCELLED, PaymentStatus.PROCESSING),
+        (PaymentStatus.REFUNDED, PaymentStatus.SUCCEEDED),
+    ],
+)
+async def test_update_payment_rejects_invalid_status_transitions(
+    payment,
+    active_member,
+    current_status,
+    requested_status,
+):
+    payment.status = current_status
+
+    repository = AsyncMock()
+    repository.get_by_id.return_value = payment
+
+    db = AsyncMock()
+
+    organisation_repository = AsyncMock()
+    organisation_repository.get_by_organisation_and_user.return_value = (
+        active_member
+    )
+
+    service = UpdatePaymentService(
+        db=db,
+        payment_repository=repository,
+        organisation_member_repository=organisation_repository,
+    )
+
+    with pytest.raises(
+        PaymentStateTransitionDenied,
+        match="Payment cannot transition",
+    ):
+        await service.execute(
+            payment_id=payment.id,
+            organisation_id=payment.organisation_id,
+            user_id=uuid4(),
+            status=requested_status,
+        )
+
+    assert payment.status == current_status
+    repository.update.assert_not_awaited()
+    db.commit.assert_not_awaited()
 
 
 @pytest.mark.asyncio
