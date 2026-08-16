@@ -12,6 +12,7 @@ from app.core.exceptions import (
     PaymentCustomerMismatch,
     PaymentNotFound,
     PaymentProviderReferenceAlreadyExists,
+    PaymentStateTransitionDenied,
 )
 from app.db.enums import PaymentStatus
 from app.db.models.payment import Payment
@@ -279,6 +280,58 @@ def test_update_payment_returns_200(
 
     assert data["id"] == str(payment.id)
     assert data["status"] == PaymentStatus.SUCCEEDED.value
+
+    service.execute.assert_awaited_once_with(
+        payment_id=payment.id,
+        organisation_id=organisation_id,
+        user_id=user.id,
+        status=PaymentStatus.SUCCEEDED,
+        provider_payment_id=None,
+        failure_reason=None,
+        paid_at=None,
+    )
+
+    app.dependency_overrides.pop(
+        get_update_payment_service,
+        None,
+    )
+
+
+def test_update_payment_rejects_invalid_status_transition(
+    client,
+    user,
+    payment,
+    organisation_id,
+):
+    service = AsyncMock()
+    service.execute.side_effect = PaymentStateTransitionDenied(
+        "Payment cannot transition from 'PENDING' to 'SUCCEEDED'."
+    )
+
+    async def override_service():
+        return service
+
+    app.dependency_overrides[
+        get_update_payment_service
+    ] = override_service
+
+    payload = {
+        "status": PaymentStatus.SUCCEEDED.value,
+    }
+
+    response = client.patch(
+        f"/api/v1/organisations/{organisation_id}/payments/{payment.id}",
+        json=payload,
+    )
+
+    assert response.status_code == 409
+
+    data = response.json()
+
+    assert data["success"] is False
+    assert data["error"]["code"] == (
+        "PAYMENT_STATE_TRANSITION_DENIED"
+    )
 
     service.execute.assert_awaited_once_with(
         payment_id=payment.id,

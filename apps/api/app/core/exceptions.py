@@ -81,6 +81,10 @@ class PaymentProviderReferenceAlreadyExists(BusinessOSError):
     """Raised when a provider payment reference is already in use."""
 
 
+class PaymentStateTransitionDenied(BusinessOSError):
+    """Raised when a payment status transition is not allowed."""
+
+
 class BillingRecordNotFound(BusinessOSError):
     """Raised when the specified billing record does not exist."""
 
@@ -94,7 +98,7 @@ class PlanAlreadyExists(BusinessOSError):
 
 
 class PlanNotFound(BusinessOSError):
-    """Raised when the specified plan does not exist."""
+    """Raised when a plan cannot be found."""
 
 
 class PlanAccessDenied(BusinessOSError):

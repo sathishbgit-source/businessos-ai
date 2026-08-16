@@ -6,6 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.exceptions import (
     PaymentAccessDenied,
     PaymentNotFound,
+    PaymentStateTransitionDenied,
 )
 from app.db.enums import MemberStatus, PaymentStatus
 from app.db.models.payment import Payment
@@ -63,6 +64,10 @@ class UpdatePaymentService:
         )
 
         if status is not None:
+            self._validate_status_transition(
+                current_status=payment.status,
+                requested_status=status,
+            )
             payment.status = status
 
         if provider_payment_id is not None:
@@ -83,6 +88,42 @@ class UpdatePaymentService:
         await self.db.refresh(payment)
 
         return payment
+
+    @staticmethod
+    def _validate_status_transition(
+        *,
+        current_status: PaymentStatus,
+        requested_status: PaymentStatus,
+    ) -> None:
+        """Validate that a payment follows the allowed lifecycle."""
+
+        if current_status == requested_status:
+            return
+
+        allowed_transitions = {
+            PaymentStatus.PENDING: {
+                PaymentStatus.PROCESSING,
+                PaymentStatus.CANCELLED,
+            },
+            PaymentStatus.PROCESSING: {
+                PaymentStatus.SUCCEEDED,
+                PaymentStatus.FAILED,
+            },
+            PaymentStatus.SUCCEEDED: {
+                PaymentStatus.REFUNDED,
+            },
+            PaymentStatus.FAILED: set(),
+            PaymentStatus.CANCELLED: set(),
+            PaymentStatus.REFUNDED: set(),
+        }
+
+        if requested_status in allowed_transitions[current_status]:
+            return
+
+        raise PaymentStateTransitionDenied(
+            f"Payment cannot transition from "
+            f"'{current_status.value}' to '{requested_status.value}'."
+        )
 
     async def _validate_access(
         self,
