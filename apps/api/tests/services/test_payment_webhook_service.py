@@ -54,11 +54,17 @@ def registry(provider):
     return registry
 
 
+@pytest.fixture
+def dunning_service():
+    return AsyncMock()
+
+
 @pytest.mark.asyncio
 async def test_handle_payment_webhook_updates_payment(
     payment,
     provider,
     registry,
+    dunning_service,
 ):
     repository = AsyncMock()
     repository.get_by_provider_payment_id.return_value = payment
@@ -70,6 +76,7 @@ async def test_handle_payment_webhook_updates_payment(
         db=db,
         payment_repository=repository,
         provider_registry=registry,
+        dunning_service=dunning_service,
     )
 
     result = await service.execute(
@@ -92,6 +99,61 @@ async def test_handle_payment_webhook_updates_payment(
         provider_payment_id="mock_webhook_payment",
     )
     repository.update.assert_awaited_once_with(payment)
+
+    dunning_service.recover.assert_awaited_once_with(
+        payment=payment,
+    )
+    dunning_service.start.assert_not_awaited()
+
+    db.commit.assert_awaited_once()
+    db.refresh.assert_awaited_once_with(payment)
+
+
+@pytest.mark.asyncio
+async def test_handle_payment_webhook_starts_dunning_on_failure(
+    payment,
+    provider,
+    registry,
+    dunning_service,
+):
+    provider.handle_webhook.return_value = PaymentProviderResult(
+        provider_payment_id="mock_webhook_payment",
+        status=PaymentStatus.FAILED,
+        amount=Decimal("99.00"),
+        currency="AUD",
+        failure_reason="card_declined",
+    )
+
+    repository = AsyncMock()
+    repository.get_by_provider_payment_id.return_value = payment
+    repository.update.return_value = payment
+
+    db = AsyncMock()
+
+    service = HandlePaymentWebhookService(
+        db=db,
+        payment_repository=repository,
+        provider_registry=registry,
+        dunning_service=dunning_service,
+    )
+
+    result = await service.execute(
+        provider="mock",
+        payload=b'{"event":"payment.failed"}',
+        signature="test-signature",
+    )
+
+    assert result is payment
+    assert payment.status == PaymentStatus.FAILED
+    assert payment.failure_reason == "card_declined"
+
+    dunning_service.start.assert_awaited_once()
+    assert dunning_service.start.await_args.kwargs["payment"] is payment
+    assert dunning_service.start.await_args.kwargs["now"] is not None
+
+    dunning_service.recover.assert_not_awaited()
+
+    repository.update.assert_awaited_once_with(payment)
     db.commit.assert_awaited_once()
     db.refresh.assert_awaited_once_with(payment)
 
@@ -100,6 +162,7 @@ async def test_handle_payment_webhook_updates_payment(
 async def test_handle_payment_webhook_raises_when_payment_not_found(
     provider,
     registry,
+    dunning_service,
 ):
     repository = AsyncMock()
     repository.get_by_provider_payment_id.return_value = None
@@ -110,6 +173,7 @@ async def test_handle_payment_webhook_raises_when_payment_not_found(
         db=db,
         payment_repository=repository,
         provider_registry=registry,
+        dunning_service=dunning_service,
     )
 
     with pytest.raises(
@@ -123,6 +187,8 @@ async def test_handle_payment_webhook_raises_when_payment_not_found(
         )
 
     repository.update.assert_not_awaited()
+    dunning_service.start.assert_not_awaited()
+    dunning_service.recover.assert_not_awaited()
     db.commit.assert_not_awaited()
 
 
@@ -131,8 +197,10 @@ async def test_handle_payment_webhook_rejects_invalid_transition(
     payment,
     provider,
     registry,
+    dunning_service,
 ):
     payment.status = PaymentStatus.PENDING
+
     provider.handle_webhook.return_value = PaymentProviderResult(
         provider_payment_id="mock_webhook_payment",
         status=PaymentStatus.SUCCEEDED,
@@ -147,6 +215,7 @@ async def test_handle_payment_webhook_rejects_invalid_transition(
         db=db,
         payment_repository=repository,
         provider_registry=registry,
+        dunning_service=dunning_service,
     )
 
     with pytest.raises(
@@ -161,6 +230,8 @@ async def test_handle_payment_webhook_rejects_invalid_transition(
 
     assert payment.status == PaymentStatus.PENDING
     repository.update.assert_not_awaited()
+    dunning_service.start.assert_not_awaited()
+    dunning_service.recover.assert_not_awaited()
     db.commit.assert_not_awaited()
 
 
@@ -169,6 +240,7 @@ async def test_handle_payment_webhook_normalizes_provider_name(
     payment,
     provider,
     registry,
+    dunning_service,
 ):
     repository = AsyncMock()
     repository.get_by_provider_payment_id.return_value = payment
@@ -180,6 +252,7 @@ async def test_handle_payment_webhook_normalizes_provider_name(
         db=db,
         payment_repository=repository,
         provider_registry=registry,
+        dunning_service=dunning_service,
     )
 
     await service.execute(

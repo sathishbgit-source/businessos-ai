@@ -3,6 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.session import get_db
 from app.repositories.billing_repository import BillingRepository
+from app.repositories.dunning_repository import DunningRepository
 from app.repositories.organisation_member_repository import (
     OrganisationMemberRepository,
 )
@@ -10,6 +11,7 @@ from app.providers.payment.mock import MockPaymentProvider
 from app.providers.payment.registry import PaymentProviderRegistry
 from app.repositories.payment_repository import PaymentRepository
 from app.repositories.subscription_repository import SubscriptionRepository
+from app.services.dunning.dunning_service import DunningService
 from app.services.payment.create_payment import CreatePaymentService
 from app.services.payment.handle_payment_webhook import (
     HandlePaymentWebhookService,
@@ -70,6 +72,22 @@ def get_payment_provider_registry() -> PaymentProviderRegistry:
     return registry
 
 
+def get_dunning_service(
+    db: AsyncSession = Depends(get_db),
+    provider_registry: PaymentProviderRegistry = Depends(
+        get_payment_provider_registry,
+    ),
+) -> DunningService:
+    return DunningService(
+        db=db,
+        dunning_repository=DunningRepository(db),
+        payment_repository=PaymentRepository(db),
+        billing_repository=BillingRepository(db),
+        subscription_repository=SubscriptionRepository(db),
+        provider_registry=provider_registry,
+    )
+
+
 def get_handle_payment_webhook_service(
     db: AsyncSession = Depends(get_db),
     provider_registry: PaymentProviderRegistry = Depends(
@@ -80,4 +98,8 @@ def get_handle_payment_webhook_service(
         db=db,
         payment_repository=PaymentRepository(db),
         provider_registry=provider_registry,
+        dunning_service=get_dunning_service(
+            db=db,
+            provider_registry=provider_registry,
+        ),
     )
