@@ -3,6 +3,7 @@ from uuid import UUID
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.db.enums.subscription import SubscriptionStatus
 from app.db.models.subscription import Subscription
 
 
@@ -35,6 +36,21 @@ class SubscriptionRepository:
             .order_by(Subscription.created_at.desc())
         )
         return list(result.scalars().all())
+
+    async def get_active_by_organisation(
+        self,
+        organisation_id: UUID,
+    ) -> Subscription | None:
+        result = await self.db.execute(
+            select(Subscription)
+            .where(
+                Subscription.organisation_id == organisation_id,
+                Subscription.status == SubscriptionStatus.ACTIVE,
+            )
+            .order_by(Subscription.created_at.desc())
+            .limit(1)
+        )
+        return result.scalar_one_or_none()
 
     async def get_all_by_customer(
         self,
