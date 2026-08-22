@@ -2,6 +2,8 @@ from app.db.models.audit_log import AuditLog
 from app.db.models.billing_record import BillingRecord
 from app.db.models.dunning import DunningRecord
 from app.db.models.invitation import Invitation
+from app.db.models.invoice import Invoice
+from app.db.models.invoice_line_item import InvoiceLineItem
 from app.db.models.notification import Notification
 from app.db.models.organisation import Organisation
 from app.db.models.plan import Plan
@@ -24,6 +26,8 @@ __all__ = [
     "Plan",
     "OrganisationMember",
     "Invitation",
+    "Invoice",
+    "InvoiceLineItem",
     "AuditLog",
     "BillingRecord",
     "DunningRecord",
