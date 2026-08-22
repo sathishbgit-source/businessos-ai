@@ -7,6 +7,7 @@ from app.api.v1.invitations import router as invitation_router
 from app.api.v1.notifications import router as notification_router
 from app.api.v1.organisations import router as organisation_router
 from app.api.v1.payments import router as payment_router
+from app.api.v1.payment_webhooks import router as payment_webhook_router
 from app.api.v1.plans import router as plan_router
 from app.api.v1.subscriptions import router as subscription_router
 
@@ -22,3 +23,4 @@ router.include_router(plan_router)
 router.include_router(subscription_router)
 router.include_router(billing_router)
 router.include_router(payment_router)
+router.include_router(payment_webhook_router)
