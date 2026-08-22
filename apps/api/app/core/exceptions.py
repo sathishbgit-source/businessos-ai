@@ -123,3 +123,7 @@ class InvalidSubscriptionPeriod(BusinessOSError):
 
 class SubscriptionStateTransitionDenied(BusinessOSError):
     """Raised when a subscription status transition is not allowed."""
+
+
+class FeatureNotEntitled(BusinessOSError):
+    """Raised when an organisation is not entitled to a feature."""
