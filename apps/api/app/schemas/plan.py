@@ -46,6 +46,10 @@ class PlanCreate(BaseModel):
         default_factory=list,
     )
 
+    limits: dict[str, int] = Field(
+        default_factory=dict,
+    )
+
     status: PlanStatus = PlanStatus.ACTIVE
 
 
@@ -79,6 +83,8 @@ class PlanUpdate(BaseModel):
 
     features: list[str] | None = None
 
+    limits: dict[str, int] | None = None
+
     status: PlanStatus | None = None
 
 
@@ -93,6 +99,7 @@ class PlanResponse(BaseModel):
     currency: str
     billing_interval: BillingInterval
     features: list[str]
+    limits: dict[str, int]
     status: PlanStatus
     created_at: datetime
     updated_at: datetime

@@ -15,6 +15,7 @@ from app.db.models.role_permission import RolePermission
 from app.db.models.subscription import Subscription
 from app.db.models.user import User
 from app.db.models.user_role import UserRole
+from app.db.models.usage_record import UsageRecord
 
 __all__ = [
     "User",
@@ -34,4 +35,5 @@ __all__ = [
     "Notification",
     "Subscription",
     "Payment",
+    "UsageRecord",
 ]
