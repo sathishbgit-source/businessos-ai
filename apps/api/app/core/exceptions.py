@@ -85,6 +85,10 @@ class PaymentStateTransitionDenied(BusinessOSError):
     """Raised when a payment status transition is not allowed."""
 
 
+class InvoiceAlreadyExists(BusinessOSError):
+    """Raised when an invoice already exists for a billing record."""
+
+
 class BillingRecordNotFound(BusinessOSError):
     """Raised when the specified billing record does not exist."""
 
