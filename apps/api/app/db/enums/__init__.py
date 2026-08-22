@@ -1,4 +1,5 @@
 from app.db.enums.entitlement import Feature
+from app.db.enums.invoice import InvoiceStatus
 from app.db.enums.dunning import DunningStatus
 from app.db.enums.billing import BillingStatus
 from app.db.enums.invitation import InvitationStatus
@@ -9,8 +10,10 @@ from app.db.enums.payment import PaymentStatus
 from app.db.enums.plan import BillingInterval, PlanStatus
 from app.db.enums.subscription import SubscriptionStatus
 
+
 __all__ = [
     "Feature",
+    "InvoiceStatus",
     "DunningStatus",
     "OrganisationStatus",
     "MemberStatus",
