@@ -11,6 +11,9 @@ from app.repositories.subscription_repository import SubscriptionRepository
 from app.services.billing.create_billing_record import (
     CreateBillingRecordService,
 )
+from app.services.billing.generate_billing_period import (
+    GenerateBillingPeriodService,
+)
 from app.services.billing.get_billing_record import (
     GetBillingRecordService,
 )
@@ -26,6 +29,18 @@ def get_create_billing_record_service(
     db: AsyncSession = Depends(get_db),
 ) -> CreateBillingRecordService:
     return CreateBillingRecordService(
+        db=db,
+        billing_repository=BillingRepository(db),
+        organisation_member_repository=OrganisationMemberRepository(db),
+        subscription_repository=SubscriptionRepository(db),
+        plan_repository=PlanRepository(db),
+    )
+
+
+def get_generate_billing_period_service(
+    db: AsyncSession = Depends(get_db),
+) -> GenerateBillingPeriodService:
+    return GenerateBillingPeriodService(
         db=db,
         billing_repository=BillingRepository(db),
         organisation_member_repository=OrganisationMemberRepository(db),
