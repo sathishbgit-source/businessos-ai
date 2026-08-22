@@ -62,6 +62,12 @@ class Plan(Base):
         default=list,
     )
 
+    limits: Mapped[dict[str, int]] = mapped_column(
+        JSONB,
+        nullable=False,
+        default=dict,
+    )
+
     status: Mapped[PlanStatus] = mapped_column(
         String(20),
         default=PlanStatus.ACTIVE,

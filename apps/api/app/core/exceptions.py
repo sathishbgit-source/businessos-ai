@@ -127,3 +127,31 @@ class SubscriptionStateTransitionDenied(BusinessOSError):
 
 class FeatureNotEntitled(BusinessOSError):
     """Raised when an organisation is not entitled to a feature."""
+
+
+class UsageLimitConfigurationError(BusinessOSError):
+    """Raised when a plan has no configured limit for a resource."""
+
+
+class UsageLimitExceeded(BusinessOSError):
+    """Raised when a usage consumption would exceed its configured limit."""
+
+    def __init__(
+        self,
+        *,
+        resource: str,
+        limit: int,
+        current_usage: int,
+        requested_quantity: int,
+    ) -> None:
+        self.resource = resource
+        self.limit = limit
+        self.current_usage = current_usage
+        self.requested_quantity = requested_quantity
+
+        super().__init__(
+            f"Usage limit exceeded for '{resource}': "
+            f"limit={limit}, "
+            f"current_usage={current_usage}, "
+            f"requested_quantity={requested_quantity}."
+        )
